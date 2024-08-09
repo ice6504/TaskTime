@@ -4,11 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
 
-export default function Login({
-  searchParams,
-}: {
-  searchParams: { message: string };
-}) {
+export default function Login({ searchParams }: { searchParams: { message: string } }) {
   const signIn = async (formData: FormData) => {
     "use server";
 
@@ -16,12 +12,10 @@ export default function Login({
     const password = formData.get("password") as string;
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      console.error(error);
       return redirect("/login?message=Could not authenticate user");
     }
 
@@ -36,7 +30,7 @@ export default function Login({
     const password = formData.get("password") as string;
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -45,10 +39,38 @@ export default function Login({
     });
 
     if (error) {
-      return redirect("/login?message=Could not authenticate user");
+      console.error(error);
+      return redirect("/login?message=Could not sign up user");
     }
 
-    return redirect("/login?message=Check email to continue sign in process");
+    if (data.user) {
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert({ id: data.user.id, email: data.user.email });
+
+      if (insertError) {
+        console.error("Error inserting user", insertError);
+      }
+    }
+    return redirect("/login?message=Check your email to continue the sign-in process");
+  };
+
+  const signInWithGoogle = async () => {
+    "use server";
+
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `http://example.com/auth/callback`,
+      },
+    });
+
+    if (error) {
+      console.error(error);
+      return redirect("/login?message=Could not authenticate user");
+    }
   };
 
   return (
@@ -114,6 +136,9 @@ export default function Login({
           </p>
         )}
       </form>
+      <button className="btn" onClick={signInWithGoogle}>
+        Sign In with Google
+      </button>
     </div>
   );
 }
