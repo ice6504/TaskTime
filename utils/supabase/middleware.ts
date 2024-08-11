@@ -41,10 +41,9 @@ export const updateSession = async (request: NextRequest) => {
 
     if (
       !user &&
-      !request.nextUrl.pathname.startsWith("/login") &&
-      !request.nextUrl.pathname.startsWith("/signin") &&
+      !request.nextUrl.pathname.startsWith("/sign-in") &&
       !request.nextUrl.pathname.startsWith("/auth") &&
-      !request.nextUrl.pathname.startsWith("/signup") &&
+      !request.nextUrl.pathname.startsWith("/sign-up") &&
       request.nextUrl.pathname !== "/"
     ) {
       const url = request.nextUrl.clone();
@@ -53,9 +52,8 @@ export const updateSession = async (request: NextRequest) => {
     } else if (user) {
       if (
         request.nextUrl.pathname === "/" ||
-        request.nextUrl.pathname.startsWith("/login") ||
-        request.nextUrl.pathname.startsWith("/signin") ||
-        request.nextUrl.pathname.startsWith("/signup")
+        request.nextUrl.pathname.startsWith("/sign-in") ||
+        request.nextUrl.pathname.startsWith("/sign-up")
       ) {
         const url = request.nextUrl.clone();
         url.pathname = "/protected";

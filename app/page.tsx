@@ -1,54 +1,59 @@
-import DeployButton from "../components/DeployButton";
-import AuthButton from "../components/AuthButton";
-import { createClient } from "@/utils/supabase/server";
-import ConnectSupabaseSteps from "@/components/tutorial/ConnectSupabaseSteps";
-import SignUpUserSteps from "@/components/tutorial/SignUpUserSteps";
+import Link from "next/link";
+import Image from "next/image";
+
+// Components
 import Header from "@/components/Header";
+import Introduction from "@/components/Introduction";
+import Footer from "@/components/Footer";
 
-export default async function Index() {
-  const canInitSupabaseClient = () => {
-    // This function is just for the interactive tutorial.
-    // Feel free to remove it once you have Supabase connected.
-    try {
-      createClient();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  const isSupabaseConnected = canInitSupabaseClient();
-
+export default function Index() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          <DeployButton />
-          {isSupabaseConnected && <AuthButton />}
-        </div>
-      </nav>
-
-      <div className="flex-1 flex flex-col gap-20 max-w-4xl px-3">
-        <Header />
-        <main className="flex-1 flex flex-col gap-6">
-          <h2 className="font-bold text-4xl mb-4">Next steps</h2>
-          {isSupabaseConnected ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-        </main>
+    <>
+      <div className="absolute h-full w-full z-0">
+        <Image
+          className="absolute right-0"
+          src="/static/deco1.png"
+          height={1000}
+          width={1000}
+          alt="deco"
+        />
+        <div className="absolute left-[-20vw] top-[10vh] h-[8px] w-[8px] rounded-full bg-pink-400 sm:left-[20vw] sm:h-[10px] sm:w-[10px]"></div>
+        <div className="absolute left-[-20vw] top-[60vh] h-[8px] w-[8px] rounded-full bg-white sm:left-[50vw] sm:size-3"></div>
+        <div className="absolute left-[-20vw] top-[20vh] h-[8px] w-[8px] rounded-full bg-red-400 sm:left-[60vw] sm:size-[20px]"></div>
+        <div className="absolute left-[73vw] top-[30vh] h-[8px] w-[8px] rounded-full bg-yellow-400 sm:left-[80vw] sm:top-[50vh] sm:h-[10px] sm:w-[10px]"></div>
+        <div className="absolute left-[17vw] top-[50vh] h-[8px] w-[8px] rounded-full bg-lime-400 sm:left-[3vw] sm:top-[53vh] sm:size-[13px]"></div>
+        <div className="absolute left-[87vw] top-[78vh] h-[8px] w-[8px] rounded-full bg-violet-400 sm:top-[88vh] sm:h-[20px] sm:w-[20px]"></div>
+        <div className="absolute left-[36vw] top-[90vh] h-[8px] w-[8px] rounded-full bg-blue-400 sm:top-[90vh] sm:size-[8px]"></div>
       </div>
+      <div className="w-full flex flex-col bg-grid-white gap-8 ">
+        <div className="h-screen pt-7 z-[1]">
+          <nav className="flex justify-end gap-3 px-5">
+            <Link
+              href="/sign-up"
+              className="btn bg-white/50 hover:bg-white/50 w-32 font-black border-none rounded-3xl shadow-white/60 shadow-md hover:shadow-none"
+            >
+              Sign Up
+            </Link>
 
-      <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-            target="_blank"
-            className="font-bold hover:underline"
-            rel="noreferrer"
-          >
-            Supabase
-          </a>
-        </p>
-      </footer>
-    </div>
+            <Link
+              href="/sign-in"
+              className="btn btn-primary w-32 font-black border-none rounded-3xl shadow-md shadow-primary/60 hover:shadow-none"
+            >
+              Sign In
+            </Link>
+          </nav>
+          <Header />
+        </div>
+        <Introduction />
+        <Image
+            className="absolute left-0 z-0"
+            src="/static/deco2.png"
+            height={1000}
+            width={1000}
+            alt="deco"
+          />
+      </div>
+      <Footer />
+    </>
   );
 }

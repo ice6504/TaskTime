@@ -112,7 +112,7 @@ function Signup() {
             <div className="bg-error p-4">Error: {state.message}</div>
           )}
           {state.success && (
-            <div className="bg-green-500 p-4">Register Successful!</div>
+            <div className="bg-green-500 p-4">Register Successful! <a href="https://mail.google.com">check your email</a></div>
           )}
         </form>
       </div>
