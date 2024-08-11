@@ -25,19 +25,6 @@ export const register = async (prevState: any, formData: FormData) => {
       console.log(error);
       return { message: "Could not register user" };
     }
-
-    // if (data.user) {
-    //   const { error: insertError } = await supabase.from("users").insert({
-    //     id: data.user.id,
-    //     email: data.user.email,
-    //     username: username,
-    //   });
-
-    //   if (insertError) {
-    //     console.log("error", insertError);
-    //     return { message: "Could not register user" };
-    //   }
-    // }
     return { success: true };
   } catch (error) {
     console.log("server error", error);
