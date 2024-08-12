@@ -2,7 +2,7 @@ import Image from "next/image";
 
 function Footer() {
   return (
-    <footer className="footer justify-between bg-base-300/20 py-8 px-14 text-lg relative">
+    <footer className="footer justify-between bg-base-300/20 py-8 px-14 text-lg relative z-[1]">
       <aside className="flex gap-28">
         <nav>
           <div className="grid gap-1">
@@ -48,8 +48,8 @@ function Footer() {
       <Image
         className="absolute bottom-0 right-0 z-0"
         src="/static/deco3.png"
-        height={900}
-        width={900}
+        height={500}
+        width={500}
         alt="deco"
       />
     </footer>

@@ -19,7 +19,7 @@ export default function Header() {
           </h1>
           <Link
             href="/sign-up"
-            className="btn btn-secondary font-black w-48 h-16 rounded-full my-8 text-2xl shadow-secondary/70 shadow-md"
+            className="btn btn-secondary font-black w-48 h-16 rounded-full my-8 text-2xl shadow-secondary/70 shadow-md hover:bg-white/70 hover:text-secondary duration-200"
           >
             Get Start
           </Link>
