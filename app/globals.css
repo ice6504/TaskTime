@@ -6,7 +6,12 @@
   body {
     font-family: var(--font-mulish);
     font-style: normal;
-    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(48,25,78,1) 50%, rgba(0,0,0,1) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(48, 25, 78, 1) 50%,
+      rgba(0, 0, 0, 1) 100%
+    );
   }
 }
 
@@ -21,5 +26,112 @@
   .divider:before,
   .divider:after {
     background-color: var(--fallback-bc, oklch(var(--bc) / 0.5));
+  }
+}
+
+/* Calendar */
+.fc {
+  @apply h-full;
+
+  .fc-toolbar.fc-header-toolbar {
+    @apply mb-6;
+  }
+
+  tbody[role="presentation"] {
+    @apply text-black font-semibold;
+  }
+
+  .fc-toolbar-title {
+    @apply text-white font-bold text-4xl w-20;
+  }
+
+  .fc-daygrid-day-top {
+    @apply flex justify-end;
+  }
+
+  .fc-daygrid-day {
+    @apply bg-white/80;
+
+    &.fc-day-other {
+      @apply bg-[#9FABE1]/80 text-white;
+    }
+  }
+
+  .fc-day-today {
+    &.fc-daygrid-day {
+      @apply bg-white/80;
+    }
+    .fc-daygrid-day-top {
+      @apply mx-1 mt-[0.05rem] w-8;
+
+      .fc-daygrid-day-number {
+        @apply text-white rounded-full bg-primary w-8 text-center;
+      }
+    }
+
+    &.fc-day-other {
+      @apply bg-secondary;
+    }
+  }
+
+  .fc-col-header {
+    @apply mb-2;
+  }
+
+  .fc-col-header-cell {
+    @apply text-white text-xl uppercase;
+  }
+
+  &.fc-theme-standard .fc-scrollgrid {
+    @apply border-transparent;
+  }
+
+  &.fc-theme-standard th {
+    @apply border-transparent;
+  }
+
+  &.fc-theme-standard td,
+  .fc-theme-standard th {
+    @apply border-black;
+  }
+
+  .fc-button {
+    @apply bg-primary border-none hover:bg-primary/50;
+
+    &.fc-today-button {
+      @apply capitalize font-bold w-24;
+    }
+  }
+
+  .fc-button-primary {
+    @apply rounded-xl;
+  }
+
+  .fc-button-primary:hover {
+    @apply active:bg-primary/10;
+  }
+
+  .fc-button-primary:not(:disabled).fc-button-active {
+    @apply bg-primary;
+  }
+
+  .fc-button-primary:disabled {
+    @apply bg-primary/80;
+  }
+
+  .fc-highlight {
+    @apply bg-primary/10;
+  }
+
+  &.fc-v-event {
+    @apply bg-primary/90;
+  }
+
+  .fc-h-event {
+    @apply bg-primary border-none px-1 my-[2px];
+  }
+
+  .fc-event {
+    @apply cursor-pointer;
   }
 }

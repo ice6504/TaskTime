@@ -10,13 +10,6 @@ export default function Index() {
   return (
     <>
       <div className="absolute h-full w-full z-0">
-        <Image
-          className="fixed right-0"
-          src="/static/deco1.png"
-          height={1000}
-          width={1000}
-          alt="deco"
-        />
         <div className="size-12 absolute top-[40vh] left-[50vw]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -71,13 +64,6 @@ export default function Index() {
         <Introduction />
       </div>
       <Footer />
-      <Image
-        className="fixed left-0 z-0"
-        src="/static/deco2.png"
-        height={800}
-        width={800}
-        alt="deco"
-      />
     </>
   );
 }

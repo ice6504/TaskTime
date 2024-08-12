@@ -1,4 +1,4 @@
-import { GeistSans } from "geist/font/sans";
+import Image from "next/image";
 import { Mulish } from "next/font/google";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./globals.css";
@@ -28,7 +28,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${mulish.variable}`}>
       <body>
-        <main className="min-h-screen flex flex-col items-center">
+        <div className="fixed left-0 top-0 w-full h-full z-0">
+          <Image
+            className="fixed right-0 z-0"
+            src="/static/deco1.png"
+            height={1000}
+            width={1000}
+            alt="deco"
+          />
+          <Image
+            className="fixed left-0 z-0"
+            src="/static/deco2.png"
+            height={800}
+            width={800}
+            alt="deco"
+          />
+        </div>
+        <main className="min-h-screen flex flex-col items-center z-10">
           {children}
         </main>
       </body>

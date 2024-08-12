@@ -58,20 +58,6 @@ export default function SignUpPage() {
 
   return (
     <>
-      <Image
-        className="absolute top-0 right-0 z-0"
-        src="/static/deco1.png"
-        height={500}
-        width={500}
-        alt="deco"
-      />
-      <Image
-        className="absolute left-0 bottom-0 z-0"
-        src="/static/deco2.png"
-        height={400}
-        width={400}
-        alt="deco"
-      />
       <div className="flex justify-between items-center h-screen w-screen px-32 z-[1]">
         <button
           onClick={() => router.back()}
