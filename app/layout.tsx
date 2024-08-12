@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${mulish.variable}`}>
-      <body className="bg-custom-gradient">
+      <body>
         <main className="min-h-screen flex flex-col items-center">
           {children}
         </main>

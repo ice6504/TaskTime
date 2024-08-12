@@ -1,8 +1,15 @@
 "use server";
 import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
+interface FormState {
+  success: boolean;
+  message: null | string;
+}
 
-export const register = async (prevState: any, formData: FormData) => {
+export const register = async (
+  prevState: any,
+  formData: FormData
+): Promise<FormState> => {
   try {
     const origin = headers().get("origin");
     const email = formData.get("email") as string;
@@ -10,12 +17,12 @@ export const register = async (prevState: any, formData: FormData) => {
     const password = formData.get("password") as string;
     const supabase = createClient();
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          username: username,
+          name: username,
         },
         emailRedirectTo: `${origin}/auth/callback`,
       },
@@ -23,11 +30,20 @@ export const register = async (prevState: any, formData: FormData) => {
 
     if (error) {
       console.log(error);
-      return { message: "Could not register user" };
+      return {
+        success: false,
+        message: "Could not register user",
+      };
     }
-    return { success: true };
+    return {
+      success: true,
+      message: null,
+    };
   } catch (error) {
     console.log("server error", error);
-    return { message: "Server error" };
+    return {
+      success: false,
+      message: "Server error",
+    };
   }
 };
