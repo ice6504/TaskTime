@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    font-family: var(--font-mulish);
+    font-family: var(--font-mulish), var(--font-anuphan);
     font-style: normal;
     background: linear-gradient(
       180deg,
@@ -50,27 +50,23 @@
   }
 
   .fc-daygrid-day {
-    @apply bg-white/80;
+    @apply bg-white/90;
 
     &.fc-day-other {
-      @apply bg-[#9FABE1]/80 text-white;
+      @apply bg-[#cbcbcb] text-white;
     }
   }
 
   .fc-day-today {
     &.fc-daygrid-day {
-      @apply bg-white/80;
+      @apply bg-white/90;
     }
     .fc-daygrid-day-top {
       @apply mx-1 mt-[0.05rem] w-8;
 
       .fc-daygrid-day-number {
-        @apply text-white rounded-full bg-primary w-8 text-center;
+        @apply text-white rounded-full bg-primary/80 w-8 text-center;
       }
-    }
-
-    &.fc-day-other {
-      @apply bg-secondary;
     }
   }
 
@@ -133,5 +129,9 @@
 
   .fc-event {
     @apply cursor-pointer;
+  }
+
+  .fc-popover-title {
+    @apply text-primary-content;
   }
 }

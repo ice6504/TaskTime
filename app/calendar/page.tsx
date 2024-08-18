@@ -34,7 +34,6 @@ export default function CalendarPage() {
       const { data: cardmember, error } = await supabase
         .from("cards")
         .select(`*`);
-      // .eq("id", user.id);
 
       if (error) {
         console.error("Error fetching cardmember:", error);
@@ -98,8 +97,6 @@ export default function CalendarPage() {
     return `${day}/${month}/${year}`;
   };
 
-  console.log(selectedEvent);
-
   return (
     <div className="flex flex-col items-center justify-between gap-5 pt-10 pb-5 w-full z-[5]">
       <div
@@ -151,7 +148,7 @@ export default function CalendarPage() {
             </select>
           </div>
           <h3 className="text-xl font-bold">Description :</h3>
-          <div className="w-full min-h-44 h-fit bg-white/15 shadow-xl rounded-xl p-5">
+          <div className="w-full min-h-44 h-fit bg-white/20 shadow-xl rounded-xl p-5">
             <p className="text-xl text-white font-semibold">
               {selectedEvent.description}
             </p>

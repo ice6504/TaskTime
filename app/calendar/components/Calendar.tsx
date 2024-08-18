@@ -35,6 +35,7 @@ const Calendar: FC<Props> = ({ events ,handleEventClick }) => {
       droppable={true}
       selectable={true}
       selectMirror={true}
+      dayMaxEventRows={true}
       events={formattedEvents}
       eventClick={handleEventClick}
     />

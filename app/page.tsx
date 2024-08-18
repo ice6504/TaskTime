@@ -42,7 +42,7 @@ export default function Index() {
         <div className="absolute left-[87vw] top-[78vh] h-[8px] w-[8px] rounded-full bg-violet-400 sm:top-[88vh] sm:h-[20px] sm:w-[20px]"></div>
         <div className="absolute left-[36vw] top-[90vh] h-[8px] w-[8px] rounded-full bg-blue-400 sm:top-[90vh] sm:size-[8px]"></div>
       </div>
-      <div className="w-full flex flex-col bg-grid-white bg-fixed gap-8 ">
+      <div className="w-full flex flex-col bg-grid-white bg-fixed bg-top gap-8 ">
         <div className="h-screen pt-7 z-[1]">
           <nav className="flex justify-end gap-3 px-5">
             <Link
