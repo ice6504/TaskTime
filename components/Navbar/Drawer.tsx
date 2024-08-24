@@ -25,7 +25,7 @@ function Drawer({ children }: { children: React.ReactNode }) {
           {/* Header */}
           <Navbar />
           {/* Content */}
-          <div>{children}</div>
+          {children}
         </div>
         <div className="drawer-side z-[500]">
           <label

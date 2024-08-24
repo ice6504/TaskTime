@@ -11,7 +11,7 @@ const Navbar = async () => {
   } = await supabase.auth.getUser();
 
   const signOut = async () => {
-    "use server"
+    "use server";
     const supabase = createClient();
     await supabase.auth.signOut();
     return redirect("/");
@@ -20,7 +20,7 @@ const Navbar = async () => {
   return (
     user && (
       <BgNav>
-        <div className="flex-1 space-x-2">
+        <div className="navbar-start space-x-2">
           <label
             htmlFor="my-drawer-3"
             aria-label="open sidebar"
@@ -38,7 +38,8 @@ const Navbar = async () => {
             />
           </Link>
         </div>
-        <div className="flex-none gap-1">
+
+        <div className="navbar-end">
           {/* Bell */}
           <div className="dropdown dropdown-end">
             <div
@@ -79,9 +80,13 @@ const Navbar = async () => {
             <div
               tabIndex={0}
               role="button"
-              className="btn btn-ghost btn-circle avatar hover:bg-transparent"
+              className="btn btn-ghost btn-circle avatar"
             >
-              <div className="w-8 rounded-full skeleton bg-gray-400">
+              <div
+                className={`w-8 rounded-full bg-gray-400 ${
+                  !user.user_metadata.avatar_url && "skeleton"
+                }`}
+              >
                 <Image
                   src={user.user_metadata.avatar_url}
                   alt="avatar"

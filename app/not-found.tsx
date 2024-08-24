@@ -11,20 +11,6 @@ export default function NotFound() {
       <div className="absolute left-[17vw] top-[50vh] h-[8px] w-[8px] rounded-full bg-lime-400 sm:left-[12vw] sm:top-[53vh] sm:size-[13px]"></div>
       <div className="absolute left-[87vw] top-[78vh] h-[8px] w-[8px] rounded-full bg-violet-400 sm:top-[88vh] sm:h-[20px] sm:w-[20px]"></div>
       <div className="absolute left-[36vw] top-[90vh] h-[8px] w-[8px] rounded-full bg-blue-400 sm:top-[90vh] sm:size-[8px]"></div>
-      <Image
-        className="absolute right-0"
-        src="/static/deco1.png"
-        height={500}
-        width={500}
-        alt="deco"
-      />
-      <Image
-        className="absolute left-0 bottom-0"
-        src="/static/deco2.png"
-        height={400}
-        width={400}
-        alt="deco"
-      />
 
       <div className="grid place-items-center h-screen text-white">
         <div className="flex flex-col items-center gap-3 bg-white/20 ring-1 ring-white p-20 rounded-xl backdrop-blur-sm">

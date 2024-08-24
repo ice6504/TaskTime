@@ -22,10 +22,13 @@
   .btn-ghost:hover {
     background-color: transparent;
   }
-
   .divider:before,
   .divider:after {
     background-color: var(--fallback-bc, oklch(var(--bc) / 0.5));
+  }
+
+  .skeleton {
+    border-radius: 0;
   }
 }
 

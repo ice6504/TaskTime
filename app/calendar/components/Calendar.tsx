@@ -3,18 +3,16 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-interface Cards {
+interface Card {
   card_id: number;
   card_name: string;
   description: string;
   startDate: string;
   endDate: string;
-  list_id: number;
-  position_card: number;
 }
 
 interface Props {
-  events: Cards[];
+  events: Card[];
   handleEventClick: (arg: any) => void;
 }
 
