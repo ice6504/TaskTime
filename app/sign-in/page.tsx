@@ -4,6 +4,9 @@ import { signIn } from "./action";
 import Image from "next/image";
 import Link from "next/link";
 
+// Components
+import { SubmitButton } from "@/components/forms/submit-button";
+
 function SignInPage({ searchParams }: { searchParams: { message: string } }) {
   const signInWithGoogle = async () => {
     const supabase = createClient();
@@ -71,18 +74,16 @@ function SignInPage({ searchParams }: { searchParams: { message: string } }) {
             </div>
             <div className="flex items-center justify-between my-2 px-2">
               <Link
-                href="/reset-password"
+                href="/forgot-password"
                 className="text-sm link link-hover font-bold"
               >
                 Forget Password ?
               </Link>
-              <button
-                formAction={signIn}
-                type="submit"
-                className="btn btn-md btn-primary rounded-full w-40 font-bold"
-              >
-                Sign In
-              </button>
+              <div className="w-40">
+                <SubmitButton formAction={signIn} pendingText="Signing In...">
+                  Sign In
+                </SubmitButton>
+              </div>
             </div>
           </form>
           <div className="flex justify-center pt-16">

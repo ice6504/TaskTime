@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { register } from "./action";
 
+// Components
+import { SubmitButton } from "@/components/forms/submit-button";
+
 interface FormState {
   success: boolean;
   message: null | string;
@@ -145,12 +148,7 @@ export default function SignUpPage() {
                 <p className="text-error px-2 mt-2">Error: {state.message}</p>
               )}
             </div>
-            <button
-              type="submit"
-              className="btn btn-md btn-primary rounded-full w-full font-bold"
-            >
-              Sign Up
-            </button>
+            <SubmitButton pendingText="Signing up...">Sign Up</SubmitButton>
           </form>
           <div className="flex justify-end pt-7 ">
             <Image src="/Mascot.svg" alt="Mascot" height={100} width={100} />
