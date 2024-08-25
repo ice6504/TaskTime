@@ -28,7 +28,7 @@ const anuphan = Anuphan({
 });
 
 // Components
-import Drawer from "@/components/Navbar/Drawer";
+import DrawerWrapper from "@/components/Navbar/DrawerWrapper";
 
 export default function RootLayout({
   children,
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${mulish.variable} ${anuphan.variable}`}>
       <body>
-        <Drawer>
+        <DrawerWrapper>
           <main className="min-h-screen flex flex-col items-center z-20">
             {children}
           </main>
@@ -60,7 +60,7 @@ export default function RootLayout({
               alt="deco"
             />
           </div>
-        </Drawer>
+        </DrawerWrapper>
       </body>
     </html>
   );

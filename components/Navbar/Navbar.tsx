@@ -1,25 +1,56 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+"use client";
+import { createClient } from "@/utils/supabase/client";
+import { useState, useEffect, useCallback } from "react";
+import { signOut } from "./SignOut";
 import Image from "next/image";
 import Link from "next/link";
-import BgNav from "./BgNav";
 
-const Navbar = async () => {
+const Navbar = (user: any) => {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [backgroundColor, setBackgroundColor] = useState(false);
+  const [avatar, setAvatar] = useState<null | string>(null);
 
-  const signOut = async () => {
-    "use server";
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    return redirect("/");
-  };
+  const handleScroll = useCallback(() => {
+    if (window.scrollY > 80) {
+      setBackgroundColor(true);
+    } else {
+      setBackgroundColor(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
+
+  useEffect(() => {
+    if (!avatar) {
+      const getAvatarUrl = async () => {
+        const { data } = await supabase
+          .from("users")
+          .select("avatar_url")
+          .eq("id", user.user.id)
+          .single();
+
+        if (data) {
+          setAvatar(data.avatar_url);
+        }
+      };
+
+      getAvatarUrl();
+    }
+  }, [avatar, user.user.id, supabase]);
+  console.log("Avatar :", avatar);
 
   return (
     user && (
-      <BgNav>
+      <div
+        className={`navbar fixed top-0 inset-x-0 z-[100] transition-colors duration-200 ${
+          backgroundColor && "bg-primary/20 backdrop-blur-sm"
+        }`}
+      >
         <div className="navbar-start space-x-2">
           <label
             htmlFor="my-drawer-3"
@@ -84,15 +115,21 @@ const Navbar = async () => {
             >
               <div
                 className={`w-8 rounded-full bg-gray-400 ${
-                  !user.user_metadata.avatar_url && "skeleton"
+                  !user.user.user_metadata.avatar_url || (!avatar && "skeleton")
                 }`}
               >
-                <Image
-                  src={user.user_metadata.avatar_url}
-                  alt="avatar"
-                  width={20}
-                  height={20}
-                />
+                {(avatar || user.user.user_metadata.avatar_url) && (
+                  <Image
+                    src={
+                      user.user.user_metadata.avatar_url
+                        ? user.user.user_metadata.avatar_url
+                        : avatar!
+                    }
+                    alt="avatar"
+                    width={20}
+                    height={20}
+                  />
+                )}
               </div>
             </div>
             <ul
@@ -120,7 +157,7 @@ const Navbar = async () => {
             </ul>
           </div>
         </div>
-      </BgNav>
+      </div>
     )
   );
 };

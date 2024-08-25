@@ -6,19 +6,22 @@ import { createClient } from "@/utils/supabase/client";
 import Calendar from "./components/Calendar";
 import Detail from "./components/Detail";
 
-interface Card {
+type Card = {
   card_id: number;
   card_name: string;
   description: string;
   startDate: string;
   endDate: string;
-  // lists: {
-  //   list_name: String;
-  //   boards: {
-  //     title: String;
-  //   };
-  // };
-}
+};
+
+type SelectCard = Card & {
+  lists: {
+    list_name: String;
+    boards: {
+      title: String;
+    };
+  };
+};
 
 export default function CalendarPage() {
   const supabase = createClient();
@@ -26,7 +29,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadDetail, setLoadDetail] = useState<boolean>(true);
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
-  const [selectedEvent, setSelectedEvent] = useState<null | Card>(null);
+  const [selectedEvent, setSelectedEvent] = useState<null | SelectCard>(null);
 
   const getUser = async () => {
     const {

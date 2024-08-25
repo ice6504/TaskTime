@@ -1,15 +1,17 @@
-// "use client";
-// import { useState } from "react";
+"use client";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Link from "next/link";
 import Image from "next/image";
 
-function Drawer({ children }: { children: React.ReactNode }) {
-  // const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+function Drawer({ children, user }: { children: React.ReactNode; user: any }) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const pathname = usePathname();
 
-  // const toggleDrawer = () => {
-  //   setIsDrawerOpen(!isDrawerOpen);
-  // };
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   return (
     <>
@@ -18,12 +20,12 @@ function Drawer({ children }: { children: React.ReactNode }) {
           id="my-drawer-3"
           type="checkbox"
           className="drawer-toggle"
-          // checked={isDrawerOpen}
-          // onChange={toggleDrawer}
+          checked={isDrawerOpen}
+          onChange={toggleDrawer}
         />
         <div className="drawer-content flex flex-col">
-          {/* Header */}
-          <Navbar />
+          {/* Navbar */}
+          {user && pathname !== "/reset-password" && <Navbar user={user} />}
           {/* Content */}
           {children}
         </div>
@@ -54,7 +56,11 @@ function Drawer({ children }: { children: React.ReactNode }) {
             {/* --------- Content sidebar --------- */}
             <li>
               {/* ---------- Homepage -------------- */}
-              <Link href="/" className="hover:bg-primary hover:text-white">
+              <Link
+                onClick={toggleDrawer}
+                href="/"
+                className="hover:bg-primary hover:text-white"
+              >
                 <span>
                   <i className="fa-solid fa-house py-2 mr-4"></i>
                   Homepage
@@ -64,6 +70,7 @@ function Drawer({ children }: { children: React.ReactNode }) {
             <li>
               {/* ------------- ProjectPage ---------------- */}
               <Link
+                onClick={toggleDrawer}
                 href="/my-project"
                 className="hover:bg-primary hover:text-white"
               >
@@ -75,6 +82,7 @@ function Drawer({ children }: { children: React.ReactNode }) {
             <li>
               {/* ------------ Calendar ------------- */}
               <Link
+                onClick={toggleDrawer}
                 href="/calendar"
                 className="hover:bg-primary hover:text-white"
               >
@@ -86,7 +94,11 @@ function Drawer({ children }: { children: React.ReactNode }) {
             </li>
             <li>
               {/* ------------ SettingPage -------------- */}
-              <Link href="/" className="hover:bg-primary hover:text-white">
+              <Link
+                onClick={toggleDrawer}
+                href="/"
+                className="hover:bg-primary hover:text-white"
+              >
                 <span>
                   <i className="fa-solid fa-gear py-2 mr-4"></i>Setting
                 </span>
