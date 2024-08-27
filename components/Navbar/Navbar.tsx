@@ -42,7 +42,6 @@ const Navbar = (user: any) => {
       getAvatarUrl();
     }
   }, [avatar, user.user.id, supabase]);
-  console.log("Avatar :", avatar);
 
   return (
     user && (

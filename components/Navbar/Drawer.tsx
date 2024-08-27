@@ -71,7 +71,7 @@ function Drawer({ children, user }: { children: React.ReactNode; user: any }) {
               {/* ------------- ProjectPage ---------------- */}
               <Link
                 onClick={toggleDrawer}
-                href="/my-project"
+                href="/my-projects"
                 className="hover:bg-primary hover:text-white"
               >
                 <span>

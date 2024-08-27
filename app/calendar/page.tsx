@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useUser } from "@/hooks/useUser";
 
 // components
 import Calendar from "./components/Calendar";
@@ -25,45 +26,41 @@ type SelectCard = Card & {
 
 export default function CalendarPage() {
   const supabase = createClient();
+  const user = useUser();
   const [data, setData] = useState<Card[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadDetail, setLoadDetail] = useState<boolean>(true);
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
-  const [selectedEvent, setSelectedEvent] = useState<null | SelectCard>(null);
-
-  const getUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user;
-  };
-
-  const fetchUser = async () => {
-    setLoading(true);
-    const user = await getUser();
-    if (user) {
-      const { data: cardMember, error } = await supabase
-        .from("users")
-        .select(
-          `
-            username ,
-            cards(card_id , card_name , description , startDate , endDate)
-          `
-        )
-        .eq("id", user.id);
-
-      if (error) {
-        console.error("Error fetching :", error);
-      } else {
-        setData(cardMember[0].cards);
-      }
-    }
-    setLoading(false);
-  };
+  const [selectedEvent, setSelectedEvent] = useState<SelectCard | null>(null);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    const fetchUserCards = async () => {
+      try {
+        setLoading(true);
+        if (user) {
+          const { data: cardMember, error } = await supabase
+            .from("users")
+            .select(
+              `
+                cards(card_id , card_name , description , startDate , endDate)
+              `
+            )
+            .eq("id", user.id)
+            .limit(1)
+            .single();
+
+          if (error) throw error;
+          if (cardMember) {
+            setData(cardMember.cards);
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching :", error);
+      }
+    };
+    fetchUserCards();
+  }, [user, supabase]);
 
   const detailClose = () => {
     setDetailOpen(false);
@@ -105,11 +102,13 @@ export default function CalendarPage() {
           )
         `
         )
-        .eq("card_id", parseInt(arg.event._def.publicId));
+        .eq("card_id", parseInt(arg.event._def.publicId))
+        .limit(1)
+        .single();
 
       if (error) throw error;
-      if (cardSelect && cardSelect.length > 0) {
-        setSelectedEvent(cardSelect[0]);
+      if (cardSelect) {
+        setSelectedEvent(cardSelect);
         setLoadDetail(false);
       }
     } catch (error) {
@@ -130,16 +129,18 @@ export default function CalendarPage() {
         )}
       </div>
       {/* detail */}
-      {detailOpen && selectedEvent && (
+      {detailOpen && (
         <div
           id="detail"
-          className="bg-white/10 rounded-xl w-3/4 h-fit p-5 relative"
+          className="bg-white/10 rounded-xl w-3/4 min-h-[28rem] h-fit p-5 relative"
         >
-          <Detail
-            detailClose={detailClose}
-            loading={loadDetail}
-            selectedEvent={selectedEvent}
-          />
+          {selectedEvent && (
+            <Detail
+              detailClose={detailClose}
+              loading={loadDetail}
+              selectedEvent={selectedEvent}
+            />
+          )}
         </div>
       )}
     </div>
