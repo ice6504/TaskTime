@@ -114,20 +114,11 @@ const Navbar = (user: any) => {
             >
               <div
                 className={`w-8 rounded-full bg-gray-400 ${
-                  !user.user.user_metadata.avatar_url || (!avatar && "skeleton")
+                  !avatar && "skeleton"
                 }`}
               >
-                {(avatar || user.user.user_metadata.avatar_url) && (
-                  <Image
-                    src={
-                      user.user.user_metadata.avatar_url
-                        ? user.user.user_metadata.avatar_url
-                        : avatar!
-                    }
-                    alt="avatar"
-                    width={20}
-                    height={20}
-                  />
+                {avatar && (
+                  <Image src={avatar} alt="avatar" width={20} height={20} />
                 )}
               </div>
             </div>
@@ -136,9 +127,9 @@ const Navbar = (user: any) => {
               className="menu dropdown-content bg-base-100/25 backdrop-blur-sm font-bold rounded-box z-[20] mt-3 w-52 p-2 shadow text-white"
             >
               <li>
-                <a>
+                <Link href="/profile">
                   <i className="fa-solid fa-user"></i> Profile
-                </a>
+                </Link>
               </li>
               <li>
                 <a>

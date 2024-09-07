@@ -1,149 +1,208 @@
 "use client";
-import React, { FC, useState, useEffect } from "react";
-import Editbg from "./components/Editbg";
-import EditPf from "./components/EditPf";
 import { createClient } from "@/utils/supabase/client";
+import { useState, useEffect } from "react";
+import { useUser } from "@/hooks/useUser";
+import { v4 as uuidv4 } from "uuid";
+import Image from "next/image";
+import EditProfile from "./components/EditProfile";
 
-const Page: FC = () => {
+const ProfilePage = () => {
   const supabase = createClient();
-  const [users, setUsers] = useState<any>([]);
-  const [boards, setBoards] = useState<any>([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // number เก็บค่า user_id
+  const user = useUser();
+  const [userData, setUserData] = useState<any>();
+  const [editBio, setEditBio] = useState<boolean>(false);
 
-  
-  // ฟังก์ชันดึงข้อมูลผู้ใช้
-  const fetchUsers = async () => {
-    const { data, error } = await supabase.from("users").select("*");
+  const fetchUserData = async () => {
+    try {
+      const { data: userData, error } = await supabase
+        .from("users")
+        .select(
+          `
+          username, bio, facebookUrl, instagramUrl, avatar_url, cover_picture
+          `
+        )
+        .eq("id", user.id)
+        .limit(1)
+        .single();
 
-    //ถ้ามี error ให log ออกมา
-    if (error) {
-      console.log("error", error);
-    } else {
-      setUsers(data);
-
-      // ดึงข้อมูลจาก boards
-      if (data.length > 0) {
-        setSelectedUserId(data[0].id); //บันทึก user_id
-        console.log(data);
+      if (error) throw error;
+      if (userData) {
+        setUserData(userData);
       }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
 
-  // ฟังก์ชันดึงข้อมูล boards โดยใช้ user_id ที่เป็น foreing key ใน tables บอร์ด
-  const fetchBoards = async (userId: number) => {
-    const { data, error } = await supabase
-      .from("boards")
-      .select("*")
-      .eq("creator", userId); // กรองข้อมูล ว่ามี userId นี้ ใน creator ไหม
-
-    if (error) {
-      console.log("error", error); //ถ้ามี error log ออกมา
-    } else {
-      setBoards(data); //ถ้าไม่มี บันทึกข้อมูลที่ดึงมา ไว้ใน setBoards
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await uploadCoverPicture(file);
     }
   };
 
-  useEffect(() => {
-    if (selectedUserId !== null) {
-      //ตรวจสอบ ว่ามีค่า ไม่เป็น null
-      fetchBoards(selectedUserId); // เเล้วก็จะเรียกใช้ function
+  const uploadCoverPicture = async (file: File) => {
+    try {
+      const filePath = `Cover_users/${uuidv4()}`;
+
+      // Upload the cover picture to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("attachments")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Error uploading file", uploadError.message);
+        return;
+      }
+
+      // Get the public URL for the uploaded cover picture
+      const { data: publicUrlData } = supabase.storage
+        .from("attachments")
+        .getPublicUrl(filePath);
+
+      const coverPictureUrl = publicUrlData.publicUrl;
+
+      // Update the user's cover picture in the users table
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ cover_picture: coverPictureUrl })
+        .eq("id", user.id);
+
+      if (updateError) {
+        console.error("Error updating cover picture", updateError.message);
+      } else {
+        console.log("Cover picture updated successfully");
+        // Refetch the user data to reflect the updated cover picture
+        fetchUserData();
+      }
+    } catch (error) {
+      console.error("Error uploading and updating cover picture:", error);
     }
-  }, [selectedUserId]); // ถ้า selectedUserId มีการเปลี่ยนเเปลง จะเรียกใช้ fucntion in useEffect
-   
-  console.log(users[0].facebookurl)
+  };
+
+  const toggleModal = (shouldRefetch = false) => {
+    setEditBio(!editBio);
+    if (shouldRefetch) {
+      fetchUserData();
+    }
+  };
+
   return (
-    <div className="w-full mt-10">
-      {/* Components edit background */}
-
-      <Editbg />
-
-      <div className="flex flex-col items-center px-4 justify-between gap-5 pb-2">
-        <div className="bg-white/10 rounded-b-lg w-full px-10 pb-10">
-          <div className="flex items-center justify-between gap-10 pt-10"></div>
-
-          {/* Components edit profile */}
-
-          <EditPf />
-
-          {/* content */}
-          <div>
-            <div className="flex items-center justify-between gap-5 pt-10">
-              <div className="bg-white/10 rounded-xl h-80 w-full py-5">
-                <h1 className="text-2xl font-extrabold px-10 pb-10 text-white">
-                  About me
-                  <div className="py-3 flex justify-between gap-10">
-                    <div className="bg-black/20 rounded-xl w-full h-56 px-10 pt-10"> // about me น่าจะต้องเเก้
-                      {users.map((user: any) => (
-                        <p key={user.id}>{user.bio}</p>
-                      ))}
-                    </div>
-
-                    {/* link FB and IG */}
-                    <div className="flex flex-col gap-4 w-72">
-                      <div className="bg-black/20 flex rounded-xl flex-col w-full h-16 px-2 hover:bg-primary hover:scale-110 duration-150">
-                        <div className="flex justify-center gap-5 mt-3 items-center">
-                          <img
-                            src="FB.svg"
-                            alt="facebook"
-                            className="w-10 h-10"
-                          />
-                          <div className="">
-                            {users.map((user: any) => (
-                              <a
-                                key={user.id}
-                                href={user.facebookurl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-2xl font-extrabold"
-                              >
-                                Facebook
-                              </a>
-                            ))}
-                          </div>
-                          <i className="fa-solid fa-arrow-up-right-from-square text-xl"></i>
-                        </div>
-                        
-                      </div>
-                      <div className="bg-black/20 flex rounded-xl flex-col w-full h-16 px-2 hover:bg-primary hover:scale-110 duration-150">
-                        <div className="flex justify-center gap-5 mt-3 items-center">
-                          <img
-                            src="IG.svg"
-                            alt="instargram"
-                            className="w-10 h-10"
-                          />
-                          <div className="">
-                            {users.map((user: any) => (
-                              <a
-                                key={user.id}
-                                href={user.instagramurl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-2xl font-extrabold"
-                              >
-                                Instargram
-                              </a>
-                            ))}
-                          </div>
-                          <i className="fa-solid fa-arrow-up-right-from-square text-xl"></i>
-                        </div>
-                        
-                      </div>
-                    </div>
-                    
-                  </div>
-                </h1>
+    <>
+      <div className="flex flex-col items-center justify-between w-full mt-20 mb-5 px-5">
+        {/* Components edit background */}
+        {/* <Editbg /> */}
+        <div
+          className="rounded-t-lg h-80 w-full py-5 bg-white relative"
+          style={{
+            backgroundImage: userData?.cover_picture
+              ? `url(${userData.cover_picture})`
+              : "",
+          }}
+        >
+          <div className="absolute right-5 bottom-5">
+            <form className="relative">
+              <button
+                className="btn w-80 bg-black/70 text-lg rounded-xl font-bold text-white relative z-10"
+                type="button"
+              >
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+                <i className="fa-regular fa-image mr-2"></i>
+                Edit Background
+              </button>
+            </form>
+          </div>
+        </div>
+        <div className="bg-white/10 rounded-b-lg w-full space-y-10 p-10">
+          <div className="flex items-center">
+            <div className="grow flex items-center gap-10 pr-5">
+              {/* Avatar */}
+              <div className="size-36 rounded-full bg-white relative">
+                <Image
+                  className="rounded-full"
+                  src={userData?.avatar_url}
+                  alt="Avatar"
+                  layout="fill"
+                  objectFit="cover"
+                />
               </div>
+              {/* Username */}
+              <p className="grow text-white text-3xl font-bold line-clamp-1">
+                {userData?.username}
+              </p>
             </div>
-            <div className="flex items-center justify-between gap-10 pt-10">
-              <div className="bg-white/10 rounded-xl h-80 w-full py-5">
-                <h1 className="text-2xl font-extrabold px-10 pb-10 text-white">
-                  My project
-                  <div className="flex flex-col gap-4 w-72 pt-5">
-                    {boards.length > 0 ? (
+            {/* Edit Profile */}
+            <button
+              onClick={() => toggleModal(false)}
+              className="btn bg-primary btn-circle hover:bg-primary/70 hover:scale-110 duration-300"
+            >
+              <i className="fa-solid fa-pencil text-xl"></i>
+            </button>
+          </div>
+          {/* About Me */}
+          <div className="bg-white/10 rounded-xl w-full px-8 py-5 font-extrabold text-2xl text-white space-y-3">
+            <h3>About me</h3>
+            <div className="py-3 flex justify-between gap-8">
+              <p className="grow bg-black/20 rounded-xl w-full h-56 p-10 line-clamp-4 white-space-pre-line">
+                {userData?.bio}
+              </p>
+
+              {/* link FB and IG */}
+              {(userData?.facebookUrl || userData?.instagramUrl) && (
+                <div className="flex flex-col gap-4 w-72">
+                  {userData?.facebookUrl && (
+                    <a
+                      href={userData.facebookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex justify-around gap-3 items-center px-6 py-3 rounded-xl bg-black/20 hover:bg-primary hover:scale-110 duration-150"
+                    >
+                      <Image
+                        src="/brands/FB.svg"
+                        alt="Facebook Logo"
+                        width={40}
+                        height={40}
+                      />
+                      <span>Facebook</span>
+                    </a>
+                  )}
+                  {userData?.instagramUrl && (
+                    <a
+                      href={userData.instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex justify-around gap-3 items-center px-6 py-3 rounded-xl bg-black/20 hover:bg-primary hover:scale-110 duration-150"
+                    >
+                      <Image
+                        src="/brands/IG.svg"
+                        alt="Instagram Logo"
+                        width={40}
+                        height={40}
+                      />
+                      <span>Instagram</span>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white/10 rounded-xl h-80 w-full py-5">
+            <h1 className="text-2xl font-extrabold px-10 pb-10 text-white">
+              My project
+              <div className="flex flex-col gap-4 w-72 pt-5">
+                {/* {boards.length > 0 ? (
                       boards.map((board: any) => (
                         <div className="bg-black/20 flex rounded-xl flex-col w-fit h-16 px-2">
                           <div className="flex p-4 justify-around w-fit items-center">
@@ -155,16 +214,18 @@ const Page: FC = () => {
                       ))
                     ) : (
                       <p></p> // แสดงข้อความหากไม่มีข้อมูล
-                    )}
-                  </div>
-                </h1>
+                    )} */}
               </div>
-            </div>
+            </h1>
           </div>
         </div>
       </div>
-    </div>
+
+      {editBio && userData && (
+        <EditProfile userData={userData} closeModal={toggleModal} />
+      )}
+    </>
   );
 };
 
-export default Page;
+export default ProfilePage;

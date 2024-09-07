@@ -102,7 +102,7 @@ function SignInPage({ searchParams }: { searchParams: { message: string } }) {
               onClick={signInWithGoogle}
               className="btn px-10 rounded-3xl bg-white text-black hover:bg-white/70 font-bold"
             >
-              <Image src="/Google.svg" alt="Google" width={30} height={30} />
+              <Image src="/brands/Google.svg" alt="Google" width={30} height={30} />
               <p>Google</p>
             </button>
           </div>

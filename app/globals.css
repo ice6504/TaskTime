@@ -13,11 +13,16 @@
       rgba(0, 0, 0, 1) 100%
     );
   }
+
+  .white-space-pre-line {
+    white-space: pre-line;
+  }
 }
 
 @layer components {
   .btn {
     color: white;
+    border: none;
   }
   .btn-ghost:hover {
     background-color: transparent;
@@ -26,7 +31,6 @@
   .divider:after {
     background-color: var(--fallback-bc, oklch(var(--bc) / 0.5));
   }
-
   .skeleton {
     border-radius: 0;
   }
