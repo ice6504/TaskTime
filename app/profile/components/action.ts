@@ -1,6 +1,5 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
-import { v4 as uuidv4 } from "uuid";
 
 export async function changeProfile(formData: FormData) {
   try {
@@ -31,12 +30,15 @@ export async function changeProfile(formData: FormData) {
     updates.bio = bio || null;
 
     if (avatar) {
-      const filePath = `Avatar_users/${uuidv4()}`;
+      const filePath = `${user.id}/avatar`;
 
       // Upload the file to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from("attachments")
-        .upload(filePath, avatar);
+        .from("users")
+        .upload(filePath, avatar , {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
         console.error("Error uploading file", uploadError.message);
@@ -45,7 +47,7 @@ export async function changeProfile(formData: FormData) {
 
       // Get the public URL for the uploaded avatar
       const { data: publicUrlData } = supabase.storage
-        .from("attachments")
+        .from("users")
         .getPublicUrl(filePath);
 
       const avatarUrl = publicUrlData.publicUrl;

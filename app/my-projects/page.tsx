@@ -9,7 +9,7 @@ import CreateBoard from "./components/CreateBoard";
 
 interface Projects {
   title: string;
-  board_picture: string | null;
+  board_picture: string;
   creator: {
     username: string;
   };
@@ -31,39 +31,45 @@ function ProjectsPage() {
     return new Intl.DateTimeFormat("en-US", options).format(date).toUpperCase();
   };
 
-  const toggleModel = () => {
+  const toggleModal = () => {
     setModel(!modal);
   };
 
-  useEffect(() => {
-    const fetchUserProjects = async () => {
-      try {
-        if (user) {
-          const { data: projectMember, error } = await supabase
-            .from("users")
-            .select(
-              `
-              boards!boardmember (
-                title, board_picture,
-                creator (username)
-              )
-              `
-            )
-            .eq("id", user.id)
-            .limit(1)
-            .single();
+  const fetchUserProjects = async () => {
+    try {
+      if (user) {
+        const { data: projectMember, error } = await supabase
+          .from("users")
+          .select(
+            `
+            boards!boardmember (
+              title, board_picture,
+              creator (username)
+            ).range(0, 9)
+            `
+          )
+          .eq("id", user.id)
+          .limit(1)
+          .single();
 
-          if (error) throw error;
-          if (projectMember) {
-            setProjects(projectMember.boards);
-          }
+        if (error) throw error;
+        if (projectMember) {
+          setProjects(projectMember.boards);
         }
-      } catch (error) {
-        console.error("Error fetching :", error);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchUserProjects();
   }, [user, supabase]);
+
+  const handleBoardCreated = () => {
+    fetchUserProjects();
+    toggleModal();
+  };
 
   return (
     <>
@@ -86,7 +92,7 @@ function ProjectsPage() {
                 </p>
               </div>
             </div>
-            <button className="btn" onClick={toggleModel}>
+            <button className="btn" onClick={toggleModal}>
               Create Project
             </button>
           </div>
@@ -108,18 +114,15 @@ function ProjectsPage() {
                       key={index}
                       title={project.title}
                       creator={project.creator.username}
+                      boardPicture={project.board_picture}
                     />
                   );
                 })}
-              {/* <Project title="kds" creator="kdnsj" />
-              <Project title="kds" creator="kdnsj" />
-              <Project title="kds" creator="kdnsj" />
-              <Project title="kds" creator="kdnsj" /> */}
             </div>
           </div>
         </div>
       </div>
-      {modal && <CreateBoard closeModal={toggleModel} />}
+      {modal && <CreateBoard closeModal={handleBoardCreated} />}
     </>
   );
 }

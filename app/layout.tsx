@@ -38,28 +38,28 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${mulish.variable} ${anuphan.variable}`}>
       <body>
+        <div className="fixed top-0">
+          <Image
+            className="fixed right-0"
+            src="/static/deco1.png"
+            priority
+            height={1000}
+            width={1000}
+            alt="deco"
+          />
+          <Image
+            className="fixed left-0"
+            src="/static/deco2.png"
+            priority
+            height={800}
+            width={800}
+            alt="deco"
+          />
+        </div>
         <DrawerWrapper>
-          <main className="min-h-screen flex flex-col items-center z-20">
+          <main className="min-h-screen flex flex-col items-center">
             {children}
           </main>
-          <div className="fixed top-0">
-            <Image
-              className="fixed right-0 z-0"
-              src="/static/deco1.png"
-              priority
-              height={1000}
-              width={1000}
-              alt="deco"
-            />
-            <Image
-              className="fixed left-0 z-0"
-              src="/static/deco2.png"
-              priority
-              height={800}
-              width={800}
-              alt="deco"
-            />
-          </div>
         </DrawerWrapper>
       </body>
     </html>

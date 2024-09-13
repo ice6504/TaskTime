@@ -70,14 +70,14 @@ const EditProfile: FC<Props> = ({ userData, closeModal }) => {
           >
             <i className="fa-solid fa-xmark fa-xl"></i>
           </button>
-          <h1 className="text-4xl text-primary font-extrabold pt-5 px-5">
+          <h1 className="text-4xl font-extrabold pt-5 px-5">
             Edit Profile
           </h1>
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <div className="flex gap-5 w-full">
               {/* Upload Profile */}
               <div className="w-2/5 relative">
-                <label className="input rounded-xl flex flex-col justify-center items-center w-full h-64 bg-black/20 text-white text-md text-center hover:cursor-pointer">
+                <label className="input rounded-xl flex flex-col justify-center items-center w-full h-64 bg-black/30 text-white text-md text-center hover:cursor-pointer">
                   {selectedImage ? (
                     <Image
                       className="rounded-xl"
@@ -106,18 +106,19 @@ const EditProfile: FC<Props> = ({ userData, closeModal }) => {
               {/* Edit info */}
               <div className="flex flex-col gap-5 justify-center w-3/5">
                 <div className="flex gap-5 items-center">
-                  <span className="font-bold text-xl w-36">Name: </span>
+                  <span className="font-bold text-xl w-44">Name : </span>
                   <input
                     type="text"
                     name="username"
                     className="w-full h-[60px] font-semibold text-base rounded-lg border-2 border-[#858585] p-2 bg-white focus:outline-none"
+                    maxLength={30}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter name"
                   />
                 </div>
                 <div className="flex gap-5 items-center">
-                  <span className="font-bold text-xl w-36">Facebook: </span>
+                  <span className="font-bold text-xl w-44">Facebook : </span>
                   <input
                     type="text"
                     name="facebookUrl"
@@ -128,7 +129,7 @@ const EditProfile: FC<Props> = ({ userData, closeModal }) => {
                   />
                 </div>
                 <div className="flex gap-5 items-center">
-                  <span className="font-bold text-xl w-36">Instagram: </span>
+                  <span className="font-bold text-xl w-44">Instagram : </span>
                   <input
                     type="text"
                     name="instagramUrl"
@@ -155,7 +156,7 @@ const EditProfile: FC<Props> = ({ userData, closeModal }) => {
                 className="btn btn-md bg-primary hover:bg-primary/80 border-none rounded-xl text-white w-32 font-bold text-xl"
                 disabled={loading}
               >
-                {loading ? "Saving..." : "Submit"}
+                {loading ? "Saving..." : "Save"}
               </button>
             </div>
           </form>

@@ -1,5 +1,6 @@
+"use client";
+import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 // Components
 import Header from "@/components/Header";
@@ -7,6 +8,10 @@ import Introduction from "@/components/Introduction";
 import Footer from "@/components/Footer";
 
 export default function Index() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   return (
     <>
       <div className="absolute h-full w-full z-0">

@@ -49,12 +49,15 @@ const ProfilePage = () => {
 
   const uploadCoverPicture = async (file: File) => {
     try {
-      const filePath = `Cover_users/${uuidv4()}`;
+      const filePath = `${user.id}/cover`;
 
       // Upload the cover picture to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from("attachments")
-        .upload(filePath, file);
+        .from("users")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
 
       if (uploadError) {
         console.error("Error uploading file", uploadError.message);
@@ -63,7 +66,7 @@ const ProfilePage = () => {
 
       // Get the public URL for the uploaded cover picture
       const { data: publicUrlData } = supabase.storage
-        .from("attachments")
+        .from("users")
         .getPublicUrl(filePath);
 
       const coverPictureUrl = publicUrlData.publicUrl;
@@ -96,10 +99,8 @@ const ProfilePage = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-between w-full mt-20 mb-5 px-5">
-        {/* Components edit background */}
-        {/* <Editbg /> */}
         <div
-          className="rounded-t-lg h-80 w-full py-5 bg-white relative"
+          className="rounded-t-lg h-80 w-full py-5 bg-white relative bg-cover bg-top"
           style={{
             backgroundImage: userData?.cover_picture
               ? `url(${userData.cover_picture})`
