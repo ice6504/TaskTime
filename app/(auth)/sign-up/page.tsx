@@ -60,60 +60,72 @@ export default function SignUpPage() {
 
   return (
     <>
-      <div className="flex justify-between items-center h-screen w-screen px-32 z-[1]">
-        <button
-          onClick={() => router.back()}
-          className="absolute top-3 left-3 border z-[2] btn btn-ghost"
-        >
-          <i className="fa-solid fa-arrow-left"></i> Back
-        </button>
-        <div className="w-2/3 flex justify-center">
-          <Image
-            src="/Title.svg"
-            alt="TaskTime"
-            width={750}
-            height={750}
-            priority
-          />
-        </div>
-        <div className="grow bg-white/10 backdrop-blur-sm rounded-3xl py-16 px-10">
-          <h2 className="text-3xl font-bold text-white mb-10">SIGN UP</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
+      <button
+        onClick={() => router.back()}
+        className="absolute top-3 left-3 border z-[2] btn btn-ghost"
+      >
+        <i className="fa-solid fa-arrow-left"></i> Back
+      </button>
+      <div className="grow bg-white/10 backdrop-blur-sm rounded-3xl py-16 px-10">
+        <h2 className="text-3xl font-bold text-white mb-10">SIGN UP</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
+          <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
+            <i className="fa-solid fa-envelope"></i>
+            <input
+              type="text"
+              className="grow placeholder:font-medium"
+              name="email"
+              placeholder="Email"
+              required
+            />
+          </label>
+          {/* Username */}
+          <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
+            <i className="fa-solid fa-user"></i>
+            <input
+              type="text"
+              className="grow placeholder:font-medium"
+              name="username"
+              placeholder="Username"
+              required
+            />
+          </label>
+          {/* Password */}
+          <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
+            <i className="fa-solid fa-lock"></i>
+            <input
+              onChange={handlePasswordChange}
+              type={open ? "text" : "password"}
+              name="password"
+              className="grow placeholder:font-medium"
+              placeholder="Password"
+              required
+            />
+            <div
+              onClick={toggleVisibility}
+              className="btn btn-ghost btn-circle btn-sm text-black"
+            >
+              <i
+                className={`fa-solid ${open ? "fa-eye" : "fa-eye-slash"} `}
+              ></i>
+            </div>
+          </label>
+          {/* Confirm Password */}
+          <div>
             <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
-              <i className="fa-solid fa-envelope"></i>
+              <i className="fa-solid fa-key"></i>
               <input
-                type="text"
-                className="grow placeholder:font-medium"
-                name="email"
-                placeholder="Email"
-                required
-              />
-            </label>
-            {/* Username */}
-            <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
-              <i className="fa-solid fa-user"></i>
-              <input
-                type="text"
-                className="grow placeholder:font-medium"
-                name="username"
-                placeholder="Username"
-                required
-              />
-            </label>
-            {/* Password */}
-            <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
-              <i className="fa-solid fa-lock"></i>
-              <input
-                onChange={handlePasswordChange}
+                onChange={handleConfirmChange}
                 type={open ? "text" : "password"}
-                name="password"
                 className="grow placeholder:font-medium"
-                placeholder="Password"
+                placeholder="Confirm Password"
                 required
               />
               <div
-                onClick={toggleVisibility}
+                onClick={() => {
+                  setOpen(!open);
+                }}
                 className="btn btn-ghost btn-circle btn-sm text-black"
               >
                 <i
@@ -121,38 +133,15 @@ export default function SignUpPage() {
                 ></i>
               </div>
             </label>
-            {/* Confirm Password */}
-            <div>
-              <label className="input rounded-3xl flex items-center px-6 gap-4  bg-white text-black text-md">
-                <i className="fa-solid fa-key"></i>
-                <input
-                  onChange={handleConfirmChange}
-                  type={open ? "text" : "password"}
-                  className="grow placeholder:font-medium"
-                  placeholder="Confirm Password"
-                  required
-                />
-                <div
-                  onClick={() => {
-                    setOpen(!open);
-                  }}
-                  className="btn btn-ghost btn-circle btn-sm text-black"
-                >
-                  <i
-                    className={`fa-solid ${open ? "fa-eye" : "fa-eye-slash"} `}
-                  ></i>
-                </div>
-              </label>
-              {error && <p className="text-error px-2 mt-2">{error}</p>}
-              {state.message && (
-                <p className="text-error px-2 mt-2">Error: {state.message}</p>
-              )}
-            </div>
-            <SubmitButton pendingText="Signing up...">Sign Up</SubmitButton>
-          </form>
-          <div className="flex justify-end pt-7 ">
-            <Image src="/Mascot.svg" alt="Mascot" height={100} width={100} />
+            {error && <p className="text-error px-2 mt-2">{error}</p>}
+            {state.message && (
+              <p className="text-error px-2 mt-2">Error: {state.message}</p>
+            )}
           </div>
+          <SubmitButton pendingText="Signing up...">Sign Up</SubmitButton>
+        </form>
+        <div className="flex justify-end pt-7 ">
+          <Image src="/Mascot.svg" alt="Mascot" height={100} width={100} />
         </div>
       </div>
       {state.success && (

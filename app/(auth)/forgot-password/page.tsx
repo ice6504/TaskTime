@@ -6,7 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 // Components
-import { Message, FormMessage , ModalMessage} from "@/components/forms/form-message";
+import {
+  Message,
+  FormMessage,
+  ModalMessage,
+} from "@/components/forms/form-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 
 export default function ForgotPassword({
@@ -28,7 +32,7 @@ export default function ForgotPassword({
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
-    }); 
+    });
 
     if (error) {
       console.error(error.message);
@@ -41,7 +45,7 @@ export default function ForgotPassword({
 
     if (callbackUrl) {
       return redirect(callbackUrl);
-    };
+    }
 
     return encodedRedirect(
       "success",
@@ -52,59 +56,45 @@ export default function ForgotPassword({
 
   return (
     <>
-      <div className="flex justify-between items-center h-screen w-screen px-32 z-[1]">
-        <Link
-          href="/sign-in"
-          className="absolute top-3 left-3 border z-[2] btn btn-ghost"
-        >
-          <i className="fa-solid fa-arrow-left"></i> Back
-        </Link>
-        <div className="w-2/3 flex justify-center">
-          <Image
-            src="/Title.svg"
-            alt="TaskTime"
-            width={750}
-            height={750}
-            priority
-          />
-        </div>
-        <div className="grow bg-white/10 backdrop-blur-sm rounded-3xl py-16 px-10 min-h-[38rem] relative">
-          <h2 className="text-3xl font-bold text-white mb-10">
-            Forgot Password
-          </h2>
-          <form
-            className="flex-1 flex flex-col w-full justify-center gap-6"
-          >
-            {/* Email */}
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text text-white">Enter your email</span>
-              </div>
-              <label className="input rounded-3xl flex items-center px-6 gap-4 bg-white text-black text-md">
-                <i className="fa-solid fa-envelope"></i>
-                <input
-                  type="text"
-                  name="email"
-                  className="grow"
-                  placeholder="Email"
-                  required
-                />
-              </label>
-            </label>
-            <FormMessage message={searchParams} />
-            <div className="flex justify-end">
-              <div className="w-40">
-                <SubmitButton formAction={forgotPassword}>
-                  Reset Password
-                </SubmitButton>
-              </div>
+      <Link
+        href="/sign-in"
+        className="absolute top-3 left-3 border z-[2] btn btn-ghost"
+      >
+        <i className="fa-solid fa-arrow-left"></i> Back
+      </Link>
+      <div className="grow bg-white/10 backdrop-blur-sm rounded-3xl py-16 px-10 min-h-[38rem] relative">
+        <h2 className="text-3xl font-bold text-white mb-10">Forgot Password</h2>
+        <form className="flex-1 flex flex-col w-full justify-center gap-6">
+          {/* Email */}
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text text-white">Enter your email</span>
             </div>
-          </form>
-          <div className="absolute bottom-5 right-5">
-            <Image src="/Mascot.svg" alt="Mascot" height={120} width={120} />
+            <label className="input rounded-3xl flex items-center px-6 gap-4 bg-white text-black text-md">
+              <i className="fa-solid fa-envelope"></i>
+              <input
+                type="text"
+                name="email"
+                className="grow"
+                placeholder="Email"
+                required
+              />
+            </label>
+          </label>
+          <FormMessage message={searchParams} />
+          <div className="flex justify-end">
+            <div className="w-40">
+              <SubmitButton formAction={forgotPassword}>
+                Reset Password
+              </SubmitButton>
+            </div>
           </div>
+        </form>
+        <div className="absolute bottom-5 right-5">
+          <Image src="/Mascot.svg" alt="Mascot" height={120} width={120} />
         </div>
       </div>
+
       <ModalMessage message={searchParams} />
     </>
   );
