@@ -11,7 +11,7 @@ const Project: FC<Props> = ({ title, creator , boardPicture  }) => {
   return (
     <Link
       href="/"
-      className={`h-60 rounded-xl relative bg-cover bg-center hover:brightness-110 hover:scale-105 transition-all duration-100 ease-in`}
+      className={`h-60 rounded-xl relative bg-cover bg-center hover:brightness-110 hover:scale-105 transition-all duration-150 ease-in`}
       style={{ backgroundImage: `url('${boardPicture}')` }}
     >
       <div className="bg-base-100/60 backdrop-blur-sm h-16 rounded-b-xl absolute inset-x-0 bottom-0 py-2 px-3">

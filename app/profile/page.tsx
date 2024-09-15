@@ -2,7 +2,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/useUser";
-import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
 import EditProfile from "./components/EditProfile";
 

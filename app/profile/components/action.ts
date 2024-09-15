@@ -36,7 +36,7 @@ export async function changeProfile(formData: FormData) {
       const { error: uploadError } = await supabase.storage
         .from("users")
         .upload(filePath, avatar , {
-          cacheControl: '3600',
+          cacheControl: '900',
           upsert: true
         });
 

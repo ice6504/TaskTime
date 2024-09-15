@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import Image from "next/image";
-import { createBoard } from "./action";
+import { createBoard } from "@/lib/createBoards";
 
 interface Props {
   closeModal: () => void;
@@ -9,9 +9,10 @@ interface Props {
 const CreateBoard: FC<Props> = ({ closeModal }) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [projectName, setProjectName] = useState<string>("Untitled Board");
+  const [projectName, setProjectName] = useState<string>("");
   const [visibility, setVisibility] = useState<string>("true");
   const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     return () => {
@@ -39,13 +40,17 @@ const CreateBoard: FC<Props> = ({ closeModal }) => {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append("title", projectName);
+    const boardTitle =
+      projectName.trim() === "" ? "Untitled Board" : projectName;
+    formData.append("title", boardTitle);
     formData.append("color", selectedColor);
     formData.append("is_public", visibility);
     formData.append("image", selectedImage || "");
 
     try {
+      setLoading(true);
       await createBoard(formData);
+      setLoading(false);
       closeModal();
     } catch (error) {
       console.error("Failed to create board:", error);
@@ -74,7 +79,7 @@ const CreateBoard: FC<Props> = ({ closeModal }) => {
                 <label
                   className={`input rounded-xl flex flex-col justify-center items-center w-full h-full text-white text-md text-center hover:cursor-pointer bg-black/30`}
                 >
-                  {imageObjectUrl    ? (
+                  {imageObjectUrl ? (
                     <Image
                       className="rounded-xl"
                       src={imageObjectUrl}
@@ -160,7 +165,7 @@ const CreateBoard: FC<Props> = ({ closeModal }) => {
                 type="text"
                 name="title"
                 className="grow"
-                placeholder="Project name..."
+                placeholder="Untitled Board"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
               />
@@ -194,8 +199,9 @@ const CreateBoard: FC<Props> = ({ closeModal }) => {
               <button
                 type="submit"
                 className="btn btn-md bg-primary hover:bg-primary/80 border-none rounded-2xl text-white w-40 font-bold text-xl"
+                disabled={loading}
               >
-                Create
+                {loading ? "Creating" : "Create"}
               </button>
             </div>
           </div>
