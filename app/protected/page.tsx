@@ -25,9 +25,9 @@ export default function ProtectedPage() {
   return (
     <>
       <div className="w-full flex flex-col items-center gap-5 pt-20 pb-5 px-4">
-        <ProjectBar projectsLength={projects.length} closeModal={toggleModal} />
-        <div className="flex flex-col items-center justify-between gap-5 w-full">
-          <div className="bg-white/10 rounded-xl w-full px-10 pt-8 pb-8 space-y-6">
+        <ProjectBar projectsLength={projects.length} openModal={toggleModal} />
+        <div className="flex flex-col items-center justify-between w-full">
+          <div className="bg-white/10 rounded-xl w-full px-10 py-8 space-y-6">
             {/* Recent Project */}
             <h2 className="text-xl font-extrabold text-white">
               Recent Project
@@ -39,6 +39,7 @@ export default function ProtectedPage() {
                   return (
                     <Project
                       key={index}
+                      id={project.board_id}
                       title={project.title}
                       creator={project.creator.username}
                       boardPicture={project.board_picture}

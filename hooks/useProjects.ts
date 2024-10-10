@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
 
 interface Project {
+  board_id: string;
   title: string;
   board_picture: string;
   creator: {
@@ -25,7 +26,9 @@ export const useProjects = () => {
           .select(
             `
               boards!boardmember (
-              title, board_picture,
+              board_id,
+              title, 
+              board_picture,
               creator (username)
               )
             `

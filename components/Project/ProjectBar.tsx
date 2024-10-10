@@ -1,21 +1,13 @@
 import { FC } from "react";
+import { formatDate } from "@/lib/dateUtils";
 
 interface Props {
   projectsLength: number;
-  closeModal: () => void;
+  openModal: () => void;
 }
 
-const ProjectBar: FC<Props> = ({ projectsLength, closeModal }) => {
+const ProjectBar: FC<Props> = ({ projectsLength, openModal }) => {
   const today = new Date();
-
-  const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    };
-    return new Intl.DateTimeFormat("en-US", options).format(date).toUpperCase();
-  };
 
   return (
     <div className="bg-white/10 rounded-xl w-full px-10 py-5">
@@ -23,7 +15,7 @@ const ProjectBar: FC<Props> = ({ projectsLength, closeModal }) => {
         <div className="flex gap-10">
           {/* Today */}
           <div className="grid justify-items-center">
-            <p className="text-md font-medium">TO DAY’S DATE</p>
+            <p className="text-md font-medium">TODAY’S DATE</p>
             <p className="pt-2 text-xl font-bold text-white">
               {formatDate(today)}
             </p>
@@ -36,7 +28,7 @@ const ProjectBar: FC<Props> = ({ projectsLength, closeModal }) => {
             </p>
           </div>
         </div>
-        <button className="btn" onClick={closeModal}>
+        <button className="btn" onClick={openModal}>
           Create Project
         </button>
       </div>

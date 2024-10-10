@@ -2,15 +2,16 @@ import { FC } from "react";
 import Link from "next/link";
 
 interface Props {
+  id: string;
   title: string;
   creator: string;
   boardPicture: string;
 }
 
-const Project: FC<Props> = ({ title, creator , boardPicture  }) => {
+const Project: FC<Props> = ({ id, title, creator, boardPicture }) => {
   return (
     <Link
-      href="/"
+      href={`/projects/${id}`}
       className={`h-60 rounded-xl relative bg-cover bg-center hover:brightness-110 hover:scale-105 transition-all duration-150 ease-in`}
       style={{ backgroundImage: `url('${boardPicture}')` }}
     >

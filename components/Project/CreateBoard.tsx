@@ -59,7 +59,7 @@ const CreateBoard: FC<Props> = ({ closeModal }) => {
 
   return (
     <dialog className="modal modal-open">
-      <div className="modal-box max-w-[50rem] h-[48rem] bg-white">
+      <div className="modal-box max-w-[50rem] py-10 bg-white">
         <button
           onClick={closeModal}
           className="btn btn-md btn-circle btn-ghost text-black hover:text-white hover:bg-primary/50 hover:rotate-90 transition-all duration-200 absolute right-5 top-5"

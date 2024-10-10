@@ -24,15 +24,33 @@
     color: white;
     border: none;
   }
+
   .btn-ghost:hover {
     background-color: transparent;
   }
+
   .divider:before,
   .divider:after {
     background-color: var(--fallback-bc, oklch(var(--bc) / 0.5));
   }
+
   .skeleton {
     border-radius: 0;
+  }
+
+  .tab:is(input:checked) {
+    color: white;
+    font-weight: 700;
+    border-color: oklch(var(--p));
+    border-bottom-width: 4px;
+  }
+
+  .tabs-bordered > .tab {
+    border-color: transparent;
+  }
+
+  .avatar-group :where(.avatar){
+    border-width: 2px;
   }
 }
 
