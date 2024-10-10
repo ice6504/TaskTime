@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { formatDate } from "@/lib/dateUtils";
 
 // Components
@@ -23,12 +24,12 @@ function HeaderBar() {
           <div className="flex gap-8">
             {/* Back Button */}
             <div className="grid items-center">
-              <button
-                onClick={() => router.back()}
+              <Link
+                href="/"
                 className="btn btn-ghost text-white text-xl"
               >
                 <i className="fa-solid fa-angle-left"></i> Back
-              </button>
+              </Link>
             </div>
             {/* Today */}
             <div className="flex flex-col items-center gap-2">

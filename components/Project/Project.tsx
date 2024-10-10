@@ -11,7 +11,7 @@ interface Props {
 const Project: FC<Props> = ({ id, title, creator, boardPicture }) => {
   return (
     <Link
-      href={`/projects/${id}`}
+      href={`/projects/${id}/board`}
       className={`h-60 rounded-xl relative bg-cover bg-center hover:brightness-110 hover:scale-105 transition-all duration-150 ease-in`}
       style={{ backgroundImage: `url('${boardPicture}')` }}
     >
