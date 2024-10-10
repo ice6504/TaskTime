@@ -6,6 +6,7 @@ import {
   DropResult,
   Droppable,
 } from "react-beautiful-dnd";
+import ModalCard from "./Modal/ModalCard";
 
 const cardsData = [
   {
@@ -75,6 +76,12 @@ const cardsData = [
 ];
 function BoardView() {
   const [data, setData] = useState<[]>([]);
+  const [modal , setModal] = useState(false);
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -166,7 +173,8 @@ function BoardView() {
                       >
                         {(provided) => (
                           <div
-                            className="bg-gray-200 text-black mx-1 px-4 py-3"
+                            onClick={toggleModal}
+                            className="bg-gray-200 text-black mx-1 px-4 py-3 hover:cursor-pointer"
                             {...provided.dragHandleProps}
                             {...provided.draggableProps}
                             ref={provided.innerRef}
@@ -178,6 +186,7 @@ function BoardView() {
                     ))}
                     {provided.placeholder}
                   </div>
+                  {modal && <ModalCard close={toggleModal} />}
                   <button className="btn justify-start bg-black/50 hover:bg-primary font-bold rounded-2xl absolute bottom-3 inset-x-5">
                     <i className="fa-solid fa-plus"></i> Add a card
                   </button>
