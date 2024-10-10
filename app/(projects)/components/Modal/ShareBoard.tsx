@@ -1,10 +1,18 @@
+import { FC } from "react";
 import Member from "./Member";
 
-function ShareBoard() {
+interface ShareBoardProps {
+  close: () => void;
+}
+
+const ShareBoard:FC<ShareBoardProps> = ({ close }) => {
   return (
     <dialog className="modal modal-open">
       <div className="modal-box max-w-[50rem] min-h-[35rem] py-8 bg-white">
-        <button className="btn btn-md btn-circle btn-ghost text-black hover:text-white hover:bg-primary/50 hover:rotate-90 transition-all duration-200 absolute right-5 top-5">
+        <button
+          onClick={close}
+          className="btn btn-md btn-circle btn-ghost text-black hover:text-white hover:bg-primary/50 hover:rotate-90 transition-all duration-200 absolute right-5 top-5"
+        >
           <i className="fa-solid fa-xmark fa-xl"></i>
         </button>
         <div className="px-5 space-y-5 text-black">
@@ -27,6 +35,6 @@ function ShareBoard() {
       </div>
     </dialog>
   );
-}
+};
 
 export default ShareBoard;

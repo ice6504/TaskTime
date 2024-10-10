@@ -13,7 +13,7 @@ function HeaderBar() {
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
-    setModal(true);
+    setModal(!modal);
   };
 
   return (
@@ -90,7 +90,7 @@ function HeaderBar() {
           </div>
         </div>
       </div>
-      {modal && <ShareBoard />}
+      {modal && <ShareBoard close={toggleModal} />}
     </>
   );
 }
