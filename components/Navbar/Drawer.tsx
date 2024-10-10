@@ -94,15 +94,14 @@ function Drawer({ children, user }: { children: React.ReactNode; user: any }) {
             </li>
             <li>
               {/* ------------ SettingPage -------------- */}
-              <Link
+              <a
                 onClick={toggleDrawer}
-                href="/"
                 className="hover:bg-primary hover:text-white"
               >
                 <span>
                   <i className="fa-solid fa-gear py-2 mr-4"></i>Setting
                 </span>
-              </Link>
+              </a>
             </li>
           </ul>
         </div>

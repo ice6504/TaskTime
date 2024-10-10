@@ -23,7 +23,7 @@ function MyProjectsPage() {
   return (
     <>
       <div className="flex flex-col items-center px-4 gap-5 pt-20 pb-5 w-full">
-        <ProjectBar projectsLength={projects.length} closeModal={toggleModal} />
+        <ProjectBar projectsLength={projects.length} openModal={toggleModal} />
         {/* Projects */}
         <div className="flex flex-col items-center justify-between gap-5 w-full">
           <div className="bg-white/10 rounded-xl w-full p-10 space-y-6">
