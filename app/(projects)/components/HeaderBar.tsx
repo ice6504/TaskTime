@@ -5,15 +5,21 @@ import { formatDate } from "@/lib/dateUtils";
 
 // Components
 import ShareBoard from "./Modal/ShareBoard";
+import Delete from "./Modal/Delete";
 
 
 function HeaderBar() {
   const today = new Date();
   const router = useRouter();
-  const [modal, setModal] = useState(false);
-
-  const toggleModal = () => {
-    setModal(!modal);
+  const [shareModal, setShareModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  
+  const toggleDelModal = () => {
+    setDeleteModal(!deleteModal);
+  };
+  
+  const toggleShareModal = () => {
+    setShareModal(!shareModal);
   };
 
   return (
@@ -42,7 +48,7 @@ function HeaderBar() {
               <p className="text-md font-medium">PROJECT MEMBERS</p>
               {/* Member */}
               <div
-                onClick={toggleModal}
+                onClick={toggleShareModal}
                 className="w-fit cursor-pointer active:scale-90 avatar-group -space-x-4 rtl:space-x-reverse flex justify-center transition-all duration-100"
               >
                 <div className="avatar">
@@ -82,7 +88,7 @@ function HeaderBar() {
                 </a>
               </li>
               <li>
-                <a className="flex justify-between hover:bg-error">
+                <a onClick={toggleDelModal} className="flex justify-between hover:bg-error">
                   Delete Project <i className="fa-solid fa-trash-can"></i>
                 </a>
               </li>
@@ -90,7 +96,8 @@ function HeaderBar() {
           </div>
         </div>
       </div>
-      {modal && <ShareBoard close={toggleModal} />}
+      {shareModal && <ShareBoard close={toggleShareModal} />}
+      {deleteModal && <Delete close={toggleDelModal}/>}
     </>
   );
 }
