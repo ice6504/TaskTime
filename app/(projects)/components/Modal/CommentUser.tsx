@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../Button/Button";
+
 
 function CommentUser() {
   return (
@@ -15,7 +15,6 @@ function CommentUser() {
           <div className="grow bg-gray-300 text-black font-bold rounded-xl p-2 ">
             <p>
               Lorem 
-              
             </p>
           </div>
           <div className="pt-2 flex justify-end relative"></div>

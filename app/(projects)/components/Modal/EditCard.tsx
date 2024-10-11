@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import AddModal from "./AddModal";
+
 import CommentCard from "./CommentCard";
-import Button from "../Button/Button";
+
 import UserInCard from "./UserInCard";
+import { createClient } from "@/utils/supabase/client";
+import { useUser } from "@/hooks/useUser";
 
 function EditCard() {
+  const supabase = createClient();
+  const User = useUser();
   const [description, setDescription] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -42,20 +46,21 @@ function EditCard() {
         <i className="fa-regular fa-file-lines fa-xl"></i>
         <h2 className="text-xl pl-3 font-bold">Description</h2>
       </div>
-      <div className="flex gap-4 justify-between">
+      <div className="flex gap-2 justify-between">
         <textarea
           className="py-3 px-4 ml-11 w-[480px] bg-white h-[160px] block border-2 resize-none border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
           placeholder="This is a textarea placeholder "
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
-        ></textarea>
+        >
+        </textarea>
 
         <div className="flex flex-col gap-2">
           <details className="dropdown text-white">
-            <summary className="btn btn-primary btn-sm w-48">
+            <summary className="btn btn-primary btn-sm w-52">
               <i className="fa-solid fa-user-plus"></i>Add User
             </summary>
-            <ul className="menu mt-1 dropdown-content bg-base-100 rounded-xl w-52 p-2 shadow z-10">
+            <ul className="menu mt-1 dropdown-content bg-base-100 rounded-xl w-fit p-2 shadow z-10">
               <p className="text-center pb-2 text-lg">Member</p>
               <label className="input input-bordered flex items-center gap-2 p-4">
                 <input
@@ -78,35 +83,37 @@ function EditCard() {
               </label>
 
               <h2 className="pl-2 pt-5 font-bold">Card member</h2>
-              <UserInCard/>
+              <UserInCard />
             </ul>
           </details>
 
           <details className="dropdown ">
-            <summary className="btn btn-primary btn-sm w-48">
-              <i className="fa-solid fa-user-plus "></i>Start Date
+            <summary className="btn btn-primary btn-sm w-52">
+              <i className="fa-regular fa-clock "></i>Start Date
             </summary>
-            <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-52 p-2 shadow z-10">
-              <h2 className=" text-white text-center">Dates</h2>
+            <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-fit p-2 shadow z-10">
+              <h2 className=" text-white text-center text-lg">Dates</h2>
 
               <div className="">
                 <label className="text-white ">Start Date </label>
                 <DatePicker
                   selected={startDate}
                   onChange={handleStartDateChange}
-                  dateFormat="dd-mm-yyyy"
+                  dateFormat="dd-MM-YYYY"
+                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div className="">
-                <label className="text-white w-full">End Date </label>
+                <label className="text-white ">End Date </label>
                 <DatePicker
                   selected={endDate}
                   onChange={handleEndDateChange}
-                  dateFormat="dd-mm-yyyy"
+                  dateFormat="dd-MM-YYYY"
+                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2 pt-2">
                 <button className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold">
                   Save
                 </button>
@@ -120,7 +127,14 @@ function EditCard() {
       </div>
 
       <div className="ml-11">
-        <Button isVisible={isInputFocused} />
+        <div className="flex gap-2 ">
+          <button className="btn btn-sm rounded-md bg-primary text-white font-bold">
+            Save
+          </button>
+          <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
+            Cancel
+          </button>
+        </div>
       </div>
 
       <div className="items-center">
@@ -130,7 +144,6 @@ function EditCard() {
       <div className="items-center">
         <CommentCard />
       </div>
-      {modal && <AddModal close={toggleModal} />}
     </div>
   );
 }

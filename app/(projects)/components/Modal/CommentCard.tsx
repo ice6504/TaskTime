@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../Button/Button";
+
 import CommentUser from "./CommentUser";
 
 function CommentCard() {
@@ -32,18 +32,26 @@ function CommentCard() {
             onBlur={() => setIsInputFocused(false)}
           />
           <div className="pt-2 flex justify-end relative">
-
             <div
               className={`${
                 isInputFocused ? "visible" : "invisible"
               } absolute right-0`}
             >
-              <Button isVisible={isInputFocused} />
+              <div className="ml-11">
+                <div className="flex gap-2 ">
+                  <button className="btn btn-sm rounded-md bg-primary text-white font-bold">
+                    Save
+                  </button>
+                  <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <CommentUser/>
+      <CommentUser />
     </>
   );
 }
