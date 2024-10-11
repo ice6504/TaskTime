@@ -2,13 +2,14 @@ import { DraggableProvided } from "@hello-pangea/dnd";
 
 interface CardProps {
   card_name: string;
-  description: string;
   provided: DraggableProvided;
+  openModal: () => void;
 }
 
-function Card({ card_name, description, provided }: CardProps) {
+function Card({ card_name, openModal, provided }: CardProps) {
   return (
     <div
+      onClick={openModal}
       className="flex flex-col justify-between gap-3 bg-white p-5 rounded-xl text-black relative"
       {...provided.dragHandleProps}
       {...provided.draggableProps}
