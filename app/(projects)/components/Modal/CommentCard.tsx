@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Button from "../Button/Button";
+import CommentUser from "./CommentUser";
 
 function CommentCard() {
   const [description, setDescription] = useState("");
@@ -42,6 +43,7 @@ function CommentCard() {
           </div>
         </div>
       </div>
+      <CommentUser/>
     </>
   );
 }
