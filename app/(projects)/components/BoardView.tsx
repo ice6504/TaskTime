@@ -69,7 +69,7 @@ function BoardView({ data }: { data: ListData[] }) {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex justify-between h-[38rem] gap-4 overflow-x-auto">
+        <div className="flex h-[38rem] gap-4 overflow-x-auto">
           {boardData.map((list) => (
             <Droppable key={list.list_id} droppableId={String(list.list_id)}>
               {(provided) => (
