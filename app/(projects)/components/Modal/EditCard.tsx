@@ -7,6 +7,7 @@ import CommentCard from "./CommentCard";
 import UserInCard from "./UserInCard";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import CommentUser from "./CommentUser";
 
 function EditCard() {
   const supabase = createClient();
@@ -16,6 +17,18 @@ function EditCard() {
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
+  
+
+  const addComment = async (description: string) => {
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([{ comment_text: description }]);
+
+    if (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
 
   const handleStartDateChange = (date: Date | null) => {
     setStartDate(date);
@@ -52,8 +65,7 @@ function EditCard() {
           placeholder="This is a textarea placeholder "
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
-        >
-        </textarea>
+        ></textarea>
 
         <div className="flex flex-col gap-2">
           <details className="dropdown text-white">
@@ -94,23 +106,25 @@ function EditCard() {
             <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-fit p-2 shadow z-10">
               <h2 className=" text-white text-center text-lg">Dates</h2>
 
-              <div className="">
+              <div className="space-y-2">
                 <label className="text-white ">Start Date </label>
                 <DatePicker
                   selected={startDate}
                   onChange={handleStartDateChange}
                   dateFormat="dd-MM-YYYY"
-                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholderText="dd-mm-yyyy"
+                  className="text-black w-48 p-1 rounded-md border  border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
-              <div className="">
-                <label className="text-white ">End Date </label>
+              <div className="space-y-2">
+                <label className="text-white">End Date </label>
                 <DatePicker
                   selected={endDate}
                   onChange={handleEndDateChange}
                   dateFormat="dd-MM-YYYY"
-                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholderText="dd-mm-yyyy"
+                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div className="flex flex-col gap-2 pt-2">
@@ -128,7 +142,7 @@ function EditCard() {
 
       <div className="ml-11">
         <div className="flex gap-2 ">
-          <button className="btn btn-sm rounded-md bg-primary text-white font-bold">
+          <button className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold">
             Save
           </button>
           <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
@@ -142,7 +156,8 @@ function EditCard() {
       </div>
 
       <div className="items-center">
-        <CommentCard />
+        <CommentCard  onSave={addComment}/>
+        <CommentUser  comments={comments}/>
       </div>
     </div>
   );

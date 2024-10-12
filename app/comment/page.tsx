@@ -3,14 +3,34 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import CommentCard from "../(projects)/components/Modal/CommentCard";
 
 export default function Comments() {
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState<any[]>([]);
   const supabase = createClient();
   const User = useUser();
 
-  // ดึงข้อมูลคอมเมนต์ทั้งหมดเมื่อหน้าโหลดครั้งแรก
+  // ฟังก์ชันสำหรับเพิ่มคอมเมนต์
+  const addComment = async (newComment: string) => {
+    if (!newComment.trim()) return;
+
+    if (!User) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("comments")
+      .insert([
+        {
+          comment_text: newComment,
+          user_id: User.id,
+        },
+      ]);
+
+    if (error) console.error("Error adding comment: ", error);
+  };
+
   useEffect(() => {
     const fetchComments = async () => {
       let { data: comments, error } = await supabase
@@ -25,20 +45,16 @@ export default function Comments() {
 
       if (error) console.error("Error fetching comments: ", error);
       else setComments(comments);
-      console.log(comments); 
     };
 
     fetchComments();
 
-    // Subscribe เพื่ออัปเดตคอมเมนต์แบบเรียลไทม์
     const commentListener = supabase
       .channel("public:comments")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "comments" },
         async (payload) => {
-          console.log("New comment added: ", payload.new);
-
           const { data: newComments, error } = await supabase
             .from("comments")
             .select(`
@@ -57,49 +73,12 @@ export default function Comments() {
           }
         }
       )
-      .on(
-        "postgres_changes", 
-        { event: "DELETE", schema: "public", table: "comments" }, 
-        (payload) => {
-          console.log("Comment deleted: ", payload.old);
-
-          setComments((currentComments) =>
-            currentComments.filter(
-              (comment) => comment.comment_id !== payload.old.comment_id
-            )
-          );
-        }
-      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(commentListener);
     };
   }, []);
-
-  // ฟังก์ชันสำหรับเพิ่มคอมเมนต์
-  const addComment = async (e) => {
-    e.preventDefault();
-    if (newComment.trim() === "") return;
-
-    if (!User) {
-      console.error("User is not logged in");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("comments")
-      .insert([
-        {
-          comment_text: newComment,
-          user_id: User.id,
-        },
-      ]);
-
-    if (error) console.error("Error adding comment: ", error);
-
-    setNewComment("");
-  };
 
   return (
     <div>
@@ -114,15 +93,9 @@ export default function Comments() {
           </div>
         ))}
       </div>
-      <form onSubmit={addComment}>
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Type your comment"
-        />
-        <button type="submit">Add Comment</button>
-      </form>
+
+      {/* ใช้ CommentCard สำหรับเพิ่มคอมเมนต์ใหม่ */}
+      <CommentCard onSave={addComment} />
     </div>
   );
 }
