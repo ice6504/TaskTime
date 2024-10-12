@@ -10,7 +10,9 @@ import {
 
 // Components
 import Card from "./Card";
+import List from "./List";
 import ModalCard from "./Modal/ModalCard";
+import { list } from "postcss";
 
 interface CardData {
   card_id: number;
@@ -33,6 +35,16 @@ function BoardView({ data }: { data: ListData[] }) {
   const [boardData, setBoardData] = useState<ListData[]>(data);
   const [editModal, setEditModal] = useState<boolean>(false);
 
+  const addCardToList = (list_id: number, newCard: CardData) => {
+    setBoardData((prevBoardData) =>
+      prevBoardData.map((list) =>
+        list.list_id === list_id
+          ? { ...list, cards: [...list.cards, newCard] }
+          : list
+      )
+    );
+  };
+
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
     if (!destination) return;
@@ -44,14 +56,12 @@ function BoardView({ data }: { data: ListData[] }) {
       const [movedList] = newData.splice(source.index, 1);
       newData.splice(destination.index, 0, movedList);
 
-      // Update list positions in state
       newData.forEach((list, index) => {
         list.position = index;
       });
 
       setBoardData(newData);
 
-      // Persist updated list order to Supabase
       try {
         for (const list of newData) {
           const { error } = await supabase
@@ -67,7 +77,6 @@ function BoardView({ data }: { data: ListData[] }) {
         console.error("Error updating lists in Supabase:", error);
       }
     } else {
-      // Handle card drag and drop
       const sourceListIndex = newData.findIndex(
         (list) => list.list_id === Number(source.droppableId)
       );
@@ -86,7 +95,6 @@ function BoardView({ data }: { data: ListData[] }) {
           movedCard
         );
 
-        // Update card positions for both lists in state
         newData[sourceListIndex].cards.forEach((card, index) => {
           card.position_card = index;
         });
@@ -96,7 +104,6 @@ function BoardView({ data }: { data: ListData[] }) {
 
         setBoardData(newData);
 
-        // Persist updated card order to Supabase
         try {
           for (const list of newData) {
             for (const card of list.cards) {
@@ -126,7 +133,7 @@ function BoardView({ data }: { data: ListData[] }) {
 
   const toggleModal = () => {
     setEditModal(!editModal);
-  };  
+  };
 
   return (
     <>
@@ -147,52 +154,13 @@ function BoardView({ data }: { data: ListData[] }) {
                     index={listIndex}
                   >
                     {(provided) => (
-                      <div
-                        className="flex-shrink-0 p-5 pb-16 w-96 h-fit rounded-lg bg-white/10 relative"
-                        {...provided.draggableProps}
-                        ref={provided.innerRef}
+                      <List
+                        provided={provided}
+                        list_name={list.list_name}
+                        list_id={list.list_id}
+                        cardLength={list.cards.length}
+                        onCardAdd={addCardToList}
                       >
-                        <div
-                          className="flex justify-between items-center"
-                          {...provided.dragHandleProps}
-                        >
-                          <h2 className="text-2xl font-bold text-white line-clamp-1">
-                            {list.list_name}
-                          </h2>
-                          <div className="dropdown dropdown-end">
-                            <div
-                              tabIndex={0}
-                              role="button"
-                              className="btn btn-ghost btn-circle bnt-xs"
-                            >
-                              <i className="fa-solid fa-ellipsis fa-xl"></i>
-                            </div>
-                            <ul
-                              tabIndex={0}
-                              className="dropdown-content menu bg-black/50 backdrop-blur-sm rounded-box z-[1] text-white font-bold text-lg w-60 p-2 shadow"
-                            >
-                              <li>
-                                <a className="justify-between">
-                                  Add a card{" "}
-                                  <i className="fa-solid fa-plus"></i>
-                                </a>
-                              </li>
-                              <li>
-                                <a className="justify-between">
-                                  Rename list
-                                  <i className="fa-solid fa-pen"></i>
-                                </a>
-                              </li>
-                              <li>
-                                <a className="justify-between hover:bg-error/80">
-                                  Delete list
-                                  <i className="fa-solid fa-trash-can"></i>
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                        <div className="divider"></div>
                         <Droppable
                           droppableId={String(list.list_id)}
                           type="card"
@@ -226,10 +194,7 @@ function BoardView({ data }: { data: ListData[] }) {
                             </div>
                           )}
                         </Droppable>
-                        <button className="btn justify-start bg-black/50 hover:bg-primary font-bold rounded-2xl absolute bottom-3 inset-x-5">
-                          <i className="fa-solid fa-plus"></i> Add a card
-                        </button>
-                      </div>
+                      </List>
                     )}
                   </Draggable>
                 ))}

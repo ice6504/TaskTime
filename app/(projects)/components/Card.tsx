@@ -79,7 +79,7 @@ function Card({ card_name, openModal, provided }: CardProps) {
         {/* Title */}
         <h2 className="text-xl font-bold w-11/12 line-clamp-1">{card_name}</h2>
         {/* member */}
-        <div className={`avatar-group space-x-1 rtl:space-x-reverse`}>
+        {/* <div className={`avatar-group space-x-1 rtl:space-x-reverse`}>
           <div className="avatar">
             <div className="w-7">
               <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
@@ -95,7 +95,7 @@ function Card({ card_name, openModal, provided }: CardProps) {
               <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
