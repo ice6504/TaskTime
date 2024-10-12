@@ -15,6 +15,11 @@ interface Params {
 const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
   const { data, loading, error } = usePData({ board_id: params.id });
 
+  const totalTasks = data?.lists.reduce(
+    (acc, list) => acc + (list.cards?.length || 0),
+    0
+  );
+
   return loading ? (
     <div className="flex justify-center">
       <span className="loading loading-ring w-12"></span>
@@ -36,7 +41,7 @@ const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
       <div className="flex justify-between mb-5">
         <div className="flex items-center p-4 w-1/2 bg-black/30 rounded-xl">
           <h2 className="font-bold text-white">{data?.title}</h2>
-          <span className="ml-3 text-sm">(10 tasks)</span>
+          <span className="ml-3 text-sm">( {totalTasks} task )</span>
         </div>
         <button className="btn bg-black/50 font-bold h-14">
           <i className="fa-solid fa-user-check"></i> Mytask

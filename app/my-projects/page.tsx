@@ -39,6 +39,7 @@ function MyProjectsPage() {
                   return (
                     <Project
                       key={index}
+                      id={project.board_id}
                       title={project.title}
                       creator={project.creator.username}
                       boardPicture={project.board_picture}

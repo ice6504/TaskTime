@@ -16,9 +16,11 @@ interface Member {
 }
 
 function HeaderBar({
+  board_id,
   creator,
   member,
 }: {
+  board_id: string;
   creator: string;
   member: Member[];
 }) {
@@ -71,7 +73,7 @@ function HeaderBar({
                     />
                   </div>
                 ))}
-                {member.length - 3 !== 0 && (
+                {member.length - 3 > 0 && (
                   <div className="avatar placeholder">
                     <div className="bg-white/65 text-xl text-white font-bold w-9">
                       <span>+{member.length - 3}</span>
@@ -113,6 +115,7 @@ function HeaderBar({
       </div>
       {shareModal && (
         <ShareBoard
+          board_id={board_id}
           creator={creator}
           member={member}
           close={toggleShareModal}
