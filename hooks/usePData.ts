@@ -22,6 +22,12 @@ interface ListData {
   cards: CardData[];
 }
 
+interface User {
+  username: string;
+  avatar_url: string;
+  email: string
+}
+
 interface ProjectData {
   title: string;
   lists: ListData[];

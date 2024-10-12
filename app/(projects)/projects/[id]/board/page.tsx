@@ -2,7 +2,7 @@
 import { FC } from "react";
 import Link from "next/link";
 import { usePData } from "@/hooks/usePData";
-import BoardView from "../../../components/BoardView";
+import BoardView from "@/app/(projects)/components/BoardView";
 
 interface ProjectsPage {
   params: Params;
@@ -13,9 +13,13 @@ interface Params {
 }
 
 const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
-  const { data, loading, error } = usePData({ board_id: params.id });
+  const { data, loading, error } = usePData({ board_id: params.id });  
 
-  return (
+  return loading ? (
+    <div className="flex justify-center">
+      <span className="loading loading-ring w-12"></span>
+    </div>
+  ) : (
     <>
       <div className="flex gap-3">
         <Link
