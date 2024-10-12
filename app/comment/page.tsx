@@ -1,101 +1,70 @@
-"use client";
+// "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { useUser } from "@/hooks/useUser";
-import CommentCard from "../(projects)/components/Modal/CommentCard";
+// import { useState, useEffect } from "react";
+// import { createClient } from "@/utils/supabase/client";
+// import { useUser } from "@/hooks/useUser";
+// import CommentCard from "../(projects)/components/Modal/CommentCard";
 
-export default function Comments() {
-  const [comments, setComments] = useState<any[]>([]);
-  const supabase = createClient();
-  const User = useUser();
+// interface Comment {
+//   comment_id: number;
+//   comment_text: string;
+//   comment_date: string;
+//   card_id: number;
+//   users: {
+//     username: string;
+//   };
+// }
 
-  // ฟังก์ชันสำหรับเพิ่มคอมเมนต์
-  const addComment = async (newComment: string) => {
-    if (!newComment.trim()) return;
+// export default function Comments({ cardId }: { cardId: number }) {
+//   const [comments, setComments] = useState<Comment[]>([]);
+//   const supabase = createClient();
+//   const User = useUser();
 
-    if (!User) {
-      console.error("User is not logged in");
-      return;
-    }
+//   const addComment = async (newComment: string, cardId: number) => { // เพิ่ม cardId เป็น parameter
+//     if (!newComment.trim()) return;
 
-    const { error } = await supabase
-      .from("comments")
-      .insert([
-        {
-          comment_text: newComment,
-          user_id: User.id,
-        },
-      ]);
+//     if (!User) {
+//       console.error("User is not logged in");
+//       return;
+//     }
 
-    if (error) console.error("Error adding comment: ", error);
-  };
+//     const { error } = await supabase
+//       .from("comments")
+//       .insert([
+//         {
+//           comment_text: newComment,
+//           user_id: User.id,
+//           card_id: cardId, // ส่ง card_id ที่นี่
+//         },
+//       ]);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      let { data: comments, error } = await supabase
-        .from("comments")
-        .select(`
-          comment_id,
-          comment_text,
-          comment_date,
-          users (username)
-        `)
-        .order("comment_date", { ascending: false });
+//     if (error) console.error("Error adding comment: ", error);
+//   };
 
-      if (error) console.error("Error fetching comments: ", error);
-      else setComments(comments);
-    };
+//   useEffect(() => {
+//     const fetchComments = async () => {
+//       let { data: comments, error } = await supabase
+//         .from("comments")
+//         .select(`
+//           comment_id,
+//           comment_text,
+//           comment_date,
+//           card_id,
+//           users (username)
+//         `)
+//         .eq("card_id", cardId) // ดึงคอมเมนต์เฉพาะของการ์ดนี้
+//         .order("comment_date", { ascending: false });
 
-    fetchComments();
+//       if (error) console.error("Error fetching comments: ", error);
+//       else setComments(comments);
+//     };
 
-    const commentListener = supabase
-      .channel("public:comments")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "comments" },
-        async (payload) => {
-          const { data: newComments, error } = await supabase
-            .from("comments")
-            .select(`
-              comment_id,
-              comment_text,
-              comment_date,
-              users (username)
-            `)
-            .eq("comment_id", payload.new.comment_id)
-            .single();
+//     fetchComments();
+//   }, [cardId]); // เพิ่ม cardId เป็น dependency เพื่อให้ดึงข้อมูลเมื่อ cardId เปลี่ยนแปลง
 
-          if (error) {
-            console.error("Error fetching new comment: ", error);
-          } else {
-            setComments((currentComments) => [newComments, ...currentComments]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(commentListener);
-    };
-  }, []);
-
-  return (
-    <div>
-      <h1>Realtime Comments</h1>
-      <div style={{ height: "300px", overflowY: "scroll" }}>
-        {comments.map((comment) => (
-          <div key={comment.comment_id}>
-            <strong>{comment.users?.username || "Unknown User"}: </strong>
-            <span>{comment.comment_text}</span>
-            <br />
-            <small>{new Date(comment.comment_date).toLocaleDateString()}</small>
-          </div>
-        ))}
-      </div>
-
-      {/* ใช้ CommentCard สำหรับเพิ่มคอมเมนต์ใหม่ */}
-      <CommentCard onSave={addComment} />
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <CommentCard onSave={addComment} cardId={cardId} /> {/* ส่ง cardId ไปที่ CommentCard */}
+//     </div>
+//   );
+// }
