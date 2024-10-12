@@ -5,7 +5,7 @@ interface Props {
   close: () => void;
   list_id: number;
   maxPosition: number;
-  onCardAdd: (list_id: number, newCard: any) => void; 
+  onCardAdd: (list_id: number, newCard: any) => void;
 }
 
 const AddCard: FC<Props> = ({ close, list_id, maxPosition, onCardAdd }) => {
@@ -62,14 +62,21 @@ const AddCard: FC<Props> = ({ close, list_id, maxPosition, onCardAdd }) => {
       />
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex justify-between items-center font-semibold">
-        <button type="submit" className={`btn bg-black/50 ${loading ? "opacity-50 cursor-not-allowed" : ""}`} disabled={loading}>
+        <button
+          type="submit"
+          className={`btn bg-black/50 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={loading}
+        >
           {loading ? "Adding..." : "Add card"}
         </button>
         <button
+          type="button"
           onClick={close}
           className="btn btn-ghost btn-circle hover:bg-error"
         >
-          <i className="fa-solid fa-x fa-xl"></i>
+          <i className="fa-solid fa-x"></i>
         </button>
       </div>
     </form>

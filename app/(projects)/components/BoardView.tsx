@@ -1,4 +1,3 @@
-"use client";
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
 import {
@@ -12,7 +11,7 @@ import {
 import Card from "./Card";
 import List from "./List";
 import ModalCard from "./Modal/ModalCard";
-import { list } from "postcss";
+import AddList from "./AddList";
 
 interface CardData {
   card_id: number;
@@ -30,10 +29,11 @@ interface ListData {
   cards: CardData[];
 }
 
-function BoardView({ data }: { data: ListData[] }) {
+function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
   const supabase = createClient();
   const [boardData, setBoardData] = useState<ListData[]>(data);
   const [editModal, setEditModal] = useState<boolean>(false);
+  const [showAddList, setShowList] = useState(false);
 
   const addCardToList = (list_id: number, newCard: CardData) => {
     setBoardData((prevBoardData) =>
@@ -127,12 +127,30 @@ function BoardView({ data }: { data: ListData[] }) {
     }
   };
 
+  const addListToBoard = (newList: {
+    list_id: number;
+    list_name: string;
+    position: number;
+  }) => {
+    setBoardData((prevBoardData) => [
+      ...prevBoardData,
+      {
+        ...newList,
+        cards: [],
+      },
+    ]);
+  };
+
   useEffect(() => {
     setBoardData(data);
   }, [data]);
 
-  const toggleModal = () => {
+  const toggleEditModal = () => {
     setEditModal(!editModal);
+  };
+
+  const toggleAddList = () => {
+    setShowList(!showAddList);
   };
 
   return (
@@ -184,7 +202,7 @@ function BoardView({ data }: { data: ListData[] }) {
                                     {(provided) => (
                                       <Card
                                         card_name={card.card_name}
-                                        openModal={toggleModal}
+                                        openModal={toggleEditModal}
                                         provided={provided}
                                       />
                                     )}
@@ -199,16 +217,26 @@ function BoardView({ data }: { data: ListData[] }) {
                   </Draggable>
                 ))}
               {provided.placeholder}
-              <div className="flex-shrink-0 w-72">
-                <button className="btn btn-block justify-between h-14 font-bold text-xl rounded-2xl bg-white/10 hover:bg-white/10">
-                  Add <i className="fa-solid fa-plus"></i>
-                </button>
-              </div>
+              {showAddList && (
+                <AddList
+                  close={toggleAddList}
+                  onListAdd={(newList) => addListToBoard(newList)}
+                  board_id={board_id}
+                  listLength={boardData.length}
+                />
+              )}
+              {!showAddList && (
+                <div onClick={toggleAddList} className="flex-shrink-0 w-80">
+                  <button className="btn btn-block justify-between h-14 font-bold text-xl rounded-lg bg-white/10 hover:bg-white/10">
+                    Add <i className="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </Droppable>
       </DragDropContext>
-      {editModal && <ModalCard close={toggleModal} />}
+      {editModal && <ModalCard close={toggleEditModal} />}
     </>
   );
 }

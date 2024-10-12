@@ -2,7 +2,6 @@
 import { FC } from "react";
 import { useState } from "react";
 import { DraggableProvided } from "@hello-pangea/dnd";
-import { createClient } from "@/utils/supabase/client";
 
 // Components
 import AddCard from "./AddCard";

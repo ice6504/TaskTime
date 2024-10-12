@@ -13,7 +13,7 @@ interface Params {
 }
 
 const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
-  const { data, loading, error } = usePData({ board_id: params.id });  
+  const { data, loading, error } = usePData({ board_id: params.id });
 
   return loading ? (
     <div className="flex justify-center">
@@ -43,7 +43,7 @@ const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
         </button>
       </div>
       <div className="h-full">
-        {data?.lists && <BoardView data={data.lists} />}
+        {data?.lists && <BoardView data={data.lists} board_id={params.id} />}
       </div>
     </>
   );
