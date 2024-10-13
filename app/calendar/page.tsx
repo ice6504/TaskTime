@@ -20,8 +20,8 @@ type SelectCard = Card & {
     list_name: String;
     boards: {
       title: String;
-    };
-  };
+    }[];
+  }[];
 };
 
 export default function CalendarPage() {

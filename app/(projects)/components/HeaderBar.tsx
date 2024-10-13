@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/dateUtils";
 
@@ -8,17 +8,30 @@ import { formatDate } from "@/lib/dateUtils";
 import ShareBoard from "./Modal/ShareBoard";
 import Delete from "./Modal/Delete";
 
+interface Member {
+  id: string;
+  username: string;
+  avatar_url: string;
+  email: string;
+}
 
-function HeaderBar() {
+function HeaderBar({
+  board_id,
+  creator,
+  member,
+}: {
+  board_id: string;
+  creator: string;
+  member: Member[];
+}) {
   const today = new Date();
-  const router = useRouter();
   const [shareModal, setShareModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
-  
+
   const toggleDelModal = () => {
     setDeleteModal(!deleteModal);
   };
-  
+
   const toggleShareModal = () => {
     setShareModal(!shareModal);
   };
@@ -30,10 +43,7 @@ function HeaderBar() {
           <div className="flex gap-8">
             {/* Back Button */}
             <div className="grid items-center">
-              <Link
-                href="/"
-                className="btn btn-ghost text-white text-xl"
-              >
+              <Link href="/" className="btn btn-ghost text-white text-xl">
                 <i className="fa-solid fa-angle-left"></i> Back
               </Link>
             </div>
@@ -52,21 +62,24 @@ function HeaderBar() {
                 onClick={toggleShareModal}
                 className="w-fit cursor-pointer active:scale-90 avatar-group -space-x-4 rtl:space-x-reverse flex justify-center transition-all duration-100"
               >
-                <div className="avatar">
-                  <div className="w-9">
-                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                {member.slice(0, 3).map((user, index) => (
+                  <div className="avatar size-9 relative" key={index}>
+                    <Image
+                      className="rounded-full"
+                      src={user.avatar_url}
+                      alt={user.username}
+                      layout="fill"
+                      objectFit="cover"
+                    />
                   </div>
-                </div>
-                <div className="avatar">
-                  <div className="w-9">
-                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                ))}
+                {member.length - 3 > 0 && (
+                  <div className="avatar placeholder">
+                    <div className="bg-white/65 text-xl text-white font-bold w-9">
+                      <span>+{member.length - 3}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="avatar placeholder">
-                  <div className="bg-white/65 text-xl text-white font-bold w-9">
-                    <span>+3</span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -89,7 +102,10 @@ function HeaderBar() {
                 </a>
               </li>
               <li>
-                <a onClick={toggleDelModal} className="flex justify-between hover:bg-error">
+                <a
+                  onClick={toggleDelModal}
+                  className="flex justify-between hover:bg-error"
+                >
                   Delete Project <i className="fa-solid fa-trash-can"></i>
                 </a>
               </li>
@@ -97,8 +113,15 @@ function HeaderBar() {
           </div>
         </div>
       </div>
-      {shareModal && <ShareBoard close={toggleShareModal} />}
-      {deleteModal && <Delete close={toggleDelModal}/>}
+      {shareModal && (
+        <ShareBoard
+          board_id={board_id}
+          creator={creator}
+          member={member}
+          close={toggleShareModal}
+        />
+      )}
+      {deleteModal && <Delete close={toggleDelModal} />}
     </>
   );
 }

@@ -6,6 +6,12 @@ interface PDataProps {
   board_id: string;
 }
 
+interface User {
+  username: string;
+  avatar_url: string;
+  email: string;
+}
+
 interface CardData {
   card_id: number;
   card_name: string;
@@ -13,6 +19,7 @@ interface CardData {
   description: string;
   startDate: string;
   endDate: string;
+  users: User[];
 }
 
 interface ListData {
@@ -44,7 +51,10 @@ export const usePData = ({ board_id }: PDataProps) => {
               title,
               lists(
                 list_id, list_name, position,
-                cards(card_id,card_name, position_card, description, startDate, endDate)
+                cards(
+                 card_id, card_name, position_card, description, startDate, endDate,
+                  users!cardmember(username, avatar_url, email)
+                )
               )
             `
           )

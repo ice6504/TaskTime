@@ -1,25 +1,35 @@
-import React from "react";
+import Image from "next/image";
 
-function Member() {
+interface User {
+  id: string;
+  username: string;
+  avatar_url: string;
+  email: string;
+}
+
+function Member({ data, creator }: { data: User; creator: string }) {
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-3">
-        <div className="avatar">
-          <div className="w-12 rounded-full">
-            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-          </div>
+        <div className="avatar size-12 relative">
+          <Image
+            className="rounded-full"
+            src={data.avatar_url}
+            alt={data.username}
+            layout="fill"
+            objectFit="cover"
+          />
         </div>
         <div>
-          <h2 className="font-bold text-xl">Alex</h2>
-          <p className="text-xs">Workspace Admin</p>
+          <h2 className="font-bold text-xl">{data.username}</h2>
+          <p className="text-xs font-semibold">
+            Workspace {data.id == creator ? "Admin" : "Member"}
+          </p>
         </div>
       </div>
-      <select className="select select-primary bg-transparent text-xl font-bold">
-        <option disabled selected>
-          Admin
-        </option>
-        <option>Member</option>
-      </select>
+      <div className="border-2 border-primary rounded-2xl text-center text-lg w-24 py-2 font-bold">
+        {data.id == creator ? "Admin" : "Member"}
+      </div>
     </div>
   );
 }
