@@ -52,16 +52,20 @@ const ShareBoard: FC<ShareBoardProps> = ({
         setMembers(users);
       }
     };
+    
 
     const memberListener = supabase
-      .channel("public:boardmember")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "boardmember" },
-        async (payload) => {
-          console.log("Change received:", payload);
+    .channel("public:boardmember")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "boardmember" },
+      async (payload) => {
+        console.log("Change received:", payload);
+        
+        // ตรวจสอบประเภทเหตุการณ์
+        if (payload.eventType === "INSERT") {
           const newMemberData = payload.new as BoardMember;
-
+  
           // เช็คว่าผู้ใช้ใหม่ตรงกับ board_id หรือไม่
           if (newMemberData && newMemberData.board_id === board_id) {
             const { data: userData, error: userError } = await supabase
@@ -69,16 +73,28 @@ const ShareBoard: FC<ShareBoardProps> = ({
               .select("id, username, avatar_url")
               .eq("id", newMemberData.user_id)
               .single();
-
+  
             if (userError) {
               console.error("Error fetching user data:", userError);
             } else if (userData) {
               setMembers((prevMembers) => [...prevMembers, userData]); // อัปเดต state ด้วยข้อมูลผู้ใช้ใหม่
             }
           }
+        } else if (payload.eventType === "DELETE") {
+          const deletedMemberData = payload.old as BoardMember;
+  
+          // ตรวจสอบว่าผู้ใช้ที่ถูกลบตรงกับ board_id หรือไม่
+          if (deletedMemberData && deletedMemberData.board_id === board_id) {
+            // อัปเดต state เพื่อแสดงผล UI ที่ถูกต้อง
+            setMembers((prevMembers) =>
+              prevMembers.filter((member) => member.id !== deletedMemberData.user_id)
+            );
+            console.log("Member removed successfully!");
+          }
         }
-      )
-      .subscribe();
+      }
+    )
+    .subscribe();
 
     fetchMembers(); // เรียกข้อมูลครั้งแรก
 
@@ -181,6 +197,7 @@ const ShareBoard: FC<ShareBoardProps> = ({
     }
   };
 
+ 
   return (
     <dialog className="modal modal-open">
       <div className="modal-box max-w-[50rem] min-h-96 py-8 bg-white">
@@ -274,10 +291,11 @@ const ShareBoard: FC<ShareBoardProps> = ({
           {members.map((data) => {
             return (
               <Member
-                board_id={board_id}
+                
                 creator={creator}
                 data={data}
                 key={data.id}
+                
               />
             );
           })}
