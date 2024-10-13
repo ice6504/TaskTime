@@ -7,6 +7,7 @@ interface PDataProps {
 }
 
 interface User {
+  id: string;
   username: string;
   avatar_url: string;
   email: string;
@@ -53,7 +54,7 @@ export const usePData = ({ board_id }: PDataProps) => {
                 list_id, list_name, position,
                 cards(
                  card_id, card_name, position_card, description, startDate, endDate,
-                  users!cardmember(username, avatar_url, email)
+                  users!cardmember(id, username, avatar_url, email)
                 )
               )
             `

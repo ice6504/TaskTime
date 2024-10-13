@@ -1,9 +1,11 @@
 "use client";
 import { usePData } from "@/hooks/usePData";
-import { FC } from "react";
+import { useUser } from "@/hooks/useUser";
+import { FC, useState } from "react";
 import Link from "next/link";
 import { calculateDaysLeft } from "@/lib/calculateDaysLeft";
 import { formatDate } from "@/lib/dateUtils";
+import { filterTasksByUser } from "@/lib/filterTasksByUser";
 
 // Components
 import TimelineBar from "@/app/(projects)/components/Timeline/TimelineBar";
@@ -41,12 +43,19 @@ interface ListData {
 }
 
 const TimelinePage: FC<TimelinePage> = ({ params }) => {
-  const { data, loading, error } = usePData({ board_id: params.id });
+  const user = useUser();
+  const { data, loading } = usePData({ board_id: params.id });
+  const [showUserTasks, setShowUserTasks] = useState(false);
 
   const totalTasks = data?.lists.reduce(
     (acc, list) => acc + (list.cards?.length || 0),
     0
   );
+
+  const userTaskLists =
+    showUserTasks && data?.lists
+      ? filterTasksByUser(data.lists, user.id)
+      : data?.lists || [];
 
   const groupCardsByEndDate = (lists: ListData[]) => {
     const upcoming: Record<string, CardData[]> = {};
@@ -70,7 +79,7 @@ const TimelinePage: FC<TimelinePage> = ({ params }) => {
     return { upcoming, pastDue };
   };
 
-  const { upcoming, pastDue } = groupCardsByEndDate(data?.lists || []);
+  const { upcoming, pastDue } = groupCardsByEndDate(userTaskLists);
 
   return loading ? (
     <div className="flex justify-center">
@@ -95,8 +104,14 @@ const TimelinePage: FC<TimelinePage> = ({ params }) => {
           <h2 className="font-bold text-white">{data?.title}</h2>
           <span className="ml-3 text-sm">( {totalTasks} tasks )</span>
         </div>
-        <button className="btn bg-black/50 font-bold h-14">
-          <i className="fa-solid fa-user-check"></i> Mytask
+        <button
+          onClick={() => setShowUserTasks(!showUserTasks)}
+          className="btn bg-black/50 font-bold h-14"
+        >
+          <i
+            className={`fa-solid fa-user-${showUserTasks ? "group" : "check"}`}
+          ></i>
+          {showUserTasks ? "All Tasks" : "My Tasks"}
         </button>
       </div>
 
@@ -156,7 +171,7 @@ const TimelinePage: FC<TimelinePage> = ({ params }) => {
                   <h2 className="text-white text-xl font-bold">
                     {formatDate(new Date(endDate))}
                   </h2>
-                  <span>( เลยกำหนดแล้ว )</span>
+                  <span>( Overdue )</span>
                 </div>
 
                 {pastDue[endDate].map((card) => (

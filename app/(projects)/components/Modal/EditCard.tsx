@@ -6,24 +6,32 @@ import UserInCard from "./UserInCard";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
 
-function EditCard() {
+interface User {
+  id: string;
+  username: string;
+  avatar_url: string;
+  email: string;
+}
+
+interface CardData {
+  card_id: number;
+  card_name: string;
+  position_card: number;
+  description: string;
+  startDate: string;
+  endDate: string;
+  lists: {
+    list_name: string;
+  };
+  users: User[];
+}
+
+function EditCard({ cardData }: { cardData: CardData }) {
   const supabase = createClient();
   const User = useUser();
-  const [description, setDescription] = useState("");
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  // const [comments, setComments] = useState<{ id: number; comment_text: string }[]>([]);
-  const [cardId, setCardId] = useState<number | null>(null);
-
-  // const fetchComments = async () => {
-  //   const { data, error } = await supabase.from("comments").select("*")
-  //   if (error) {
-  //     console.error("Error fetching comments:", error);
-  //   } else {
-  //     setComments(data);
-  //   }
-  // };
+  const [description, setDescription] = useState(cardData.description || "");
+  const [startDate, setStartDate] = useState<Date | null>(cardData.startDate ? new Date(cardData.startDate) : null);
+  const [endDate, setEndDate] = useState<Date | null>(cardData.endDate ? new Date(cardData.endDate) : null);
 
   const addComment = async (newComment: string) => {
     if (!newComment.trim()) return;
@@ -33,22 +41,16 @@ function EditCard() {
       return;
     }
 
-    const { error } = await supabase
-      .from("comments")
-      .insert([
-        {
-          comment_text: newComment,
-          user_id: User.id,
-          card_id: cardId, // ใช้ cardId ที่ถูกต้อง
-        },
-      ]);
+    const { error } = await supabase.from("comments").insert([
+      {
+        comment_text: newComment,
+        user_id: User.id,
+        card_id: cardData.card_id,
+      },
+    ]);
 
     if (error) console.error("Error adding comment: ", error);
   };
-
-  useEffect(() => {
-    
-  }, [cardId]); // เพิ่ม cardId ใน dependencies เพื่อให้เรียก fetch ใหม่ทุกครั้งที่ cardId เปลี่ยน
 
   const handleStartDateChange = (date: Date | null) => {
     setStartDate(date);
@@ -60,7 +62,6 @@ function EditCard() {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <h2 className="text-xl font-bold"></h2>
       <div className="flex gap-3 items-center">
         <i className="fa-regular fa-file-lines fa-xl"></i>
         <h2 className="text-xl pl-3 font-bold">Description</h2>
@@ -69,7 +70,8 @@ function EditCard() {
         <textarea
           className="py-3 px-4 ml-11 w-[480px] bg-white h-[160px] block border-2 resize-none border-gray-200 rounded-lg text-sm focus:border-primary duration-300 ease  disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 hover:border-primary"
           placeholder="This is a textarea placeholder"
-          onChange={(e) => setDescription(e.target.value)} // เพิ่มการตั้งค่า description
+          value={description}
+          onChange={(e) => setDescription(e.target.value)} // Setting description value
         ></textarea>
 
         <div className="flex flex-col gap-2">
@@ -116,7 +118,7 @@ function EditCard() {
                 <DatePicker
                   selected={startDate}
                   onChange={handleStartDateChange}
-                  dateFormat="dd-MM-YYYY"
+                  dateFormat="dd-MM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -127,7 +129,7 @@ function EditCard() {
                 <DatePicker
                   selected={endDate}
                   onChange={handleEndDateChange}
-                  dateFormat="dd-MM-YYYY"
+                  dateFormat="dd-MM-yyyy"
                   placeholderText="dd-mm-yyyy"
                   className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -161,7 +163,7 @@ function EditCard() {
       </div>
 
       <div className="items-center">
-        <CommentCard onSave={addComment} cardId={cardId} />
+        <CommentCard onSave={addComment} cardId={cardData.card_id} />
       </div>
     </div>
   );

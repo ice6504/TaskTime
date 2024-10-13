@@ -13,6 +13,13 @@ import List from "./List";
 import ModalCard from "./Modal/ModalCard";
 import AddList from "./AddList";
 
+interface User {
+  id: string;
+  username: string;
+  avatar_url: string;
+  email: string;
+}
+
 interface CardData {
   card_id: number;
   card_name: string;
@@ -20,6 +27,7 @@ interface CardData {
   description: string;
   startDate: string;
   endDate: string;
+  users: User[];
 }
 
 interface ListData {
@@ -33,6 +41,7 @@ function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
   const supabase = createClient();
   const [boardData, setBoardData] = useState<ListData[]>(data);
   const [editModal, setEditModal] = useState<boolean>(false);
+  const [currentCardId, setCurrentCardId] = useState<number | null>(null);
   const [showAddList, setShowList] = useState(false);
 
   const addCardToList = (list_id: number, newCard: CardData) => {
@@ -145,7 +154,8 @@ function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
     setBoardData(data);
   }, [data]);
 
-  const toggleEditModal = () => {
+  const toggleEditModal = (cardId?: number) => {
+    setCurrentCardId(cardId ?? null); // Set the cardId when opening the modal
     setEditModal(!editModal);
   };
 
@@ -203,7 +213,9 @@ function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
                                       <Card
                                         card_name={card.card_name}
                                         openModal={toggleEditModal}
+                                        member={card.users}
                                         provided={provided}
+                                        card_id={card.card_id}
                                       />
                                     )}
                                   </Draggable>
@@ -236,7 +248,9 @@ function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
           )}
         </Droppable>
       </DragDropContext>
-      {editModal && <ModalCard close={toggleEditModal} />}
+      {editModal && currentCardId && (
+        <ModalCard close={toggleEditModal} cardId={currentCardId} />
+      )}
     </>
   );
 }

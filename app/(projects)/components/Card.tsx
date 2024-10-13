@@ -1,37 +1,21 @@
-import { useState, useEffect, useRef } from "react";
 import { DraggableProvided } from "@hello-pangea/dnd";
 
-interface CardProps {
-  card_name: string;
-  provided: DraggableProvided;
-  openModal: () => void;
+interface User {
+  id: string;
+  username: string;
+  avatar_url: string;
+  email: string;
 }
 
-function Card({ card_name, openModal, provided }: CardProps) {
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+interface CardProps {
+  card_id: number;
+  card_name: string;
+  provided: DraggableProvided;
+  openModal: (cardId: number) => void;
+  member: User[];
+}
 
-  // Handle click outside the dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
-  };
-  
+function Card({ card_id, card_name, openModal, provided, member }: CardProps) {
   return (
     <div
       className="relative"
@@ -39,7 +23,7 @@ function Card({ card_name, openModal, provided }: CardProps) {
       {...provided.draggableProps}
       ref={provided.innerRef}
     >
-      <div className="absolute top-3 right-3" ref={dropdownRef}>
+      <div className="absolute top-3 right-3">
         <details className="dropdown dropdown-end">
           <summary className="btn btn-ghost btn-circle text-black">
             <i className="fa-solid fa-ellipsis fa-xl"></i>
@@ -52,7 +36,7 @@ function Card({ card_name, openModal, provided }: CardProps) {
               </a>
             </li>
             <li>
-              <a className="justify-between">
+              <a onClick={() => openModal(card_id)} className="justify-between">
                 Open Card
                 <i className="fa-solid fa-folder"></i>
               </a>
@@ -73,29 +57,30 @@ function Card({ card_name, openModal, provided }: CardProps) {
         </details>
       </div>
       <div
-        onClick={openModal}
+        onClick={() => openModal(card_id)}
         className="flex flex-col justify-between gap-3 bg-white p-5 rounded-xl text-black "
       >
         {/* Title */}
         <h2 className="text-xl font-bold w-11/12 line-clamp-1">{card_name}</h2>
         {/* member */}
-        {/* <div className={`avatar-group space-x-1 rtl:space-x-reverse`}>
-          <div className="avatar">
-            <div className="w-7">
-              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+        <div className="avatar-group -space-x-4 rtl:space-x-reverse">
+          {member.slice(0, 3).map((user, index) => {
+            return (
+              <div key={index} className="avatar">
+                <div className="w-7">
+                  <img src={user.avatar_url} />
+                </div>
+              </div>
+            );
+          })}
+          {member.length - 3 > 0 && (
+            <div className="avatar placeholder">
+              <div className="bg-black/65 text-white font-bold w-7">
+                <span>+{member.length - 3}</span>
+              </div>
             </div>
-          </div>
-          <div className="avatar">
-            <div className="w-7">
-              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-            </div>
-          </div>
-          <div className="avatar">
-            <div className="w-7">
-              <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-            </div>
-          </div>
-        </div> */}
+          )}
+        </div>
       </div>
     </div>
   );

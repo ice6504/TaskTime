@@ -1,7 +1,12 @@
 "use client";
 import { FC } from "react";
 import Link from "next/link";
+import { filterTasksByUser } from "@/lib/filterTasksByUser";
 import { usePData } from "@/hooks/usePData";
+import { useUser } from "@/hooks/useUser";
+import { useState } from "react";
+
+// Components
 import BoardView from "@/app/(projects)/components/BoardView";
 
 interface ProjectsPage {
@@ -13,12 +18,19 @@ interface Params {
 }
 
 const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
+  const user = useUser();
   const { data, loading, error } = usePData({ board_id: params.id });
+  const [showUserTasks, setShowUserTasks] = useState(false);
 
   const totalTasks = data?.lists.reduce(
     (acc, list) => acc + (list.cards?.length || 0),
     0
   );
+
+  const userTaskLists =
+    showUserTasks && data?.lists
+      ? filterTasksByUser(data.lists, user.id)
+      : data?.lists || [];
 
   return loading ? (
     <div className="flex justify-center">
@@ -43,12 +55,22 @@ const ProjectsPage: FC<ProjectsPage> = ({ params }) => {
           <h2 className="font-bold text-white">{data?.title}</h2>
           <span className="ml-3 text-sm">( {totalTasks} task )</span>
         </div>
-        <button className="btn bg-black/50 font-bold h-14">
-          <i className="fa-solid fa-user-check"></i> Mytask
+        <button
+          onClick={() => setShowUserTasks(!showUserTasks)}
+          className="btn bg-black/50 font-bold h-14"
+        >
+          <i
+            className={`fa-solid fa-user-${showUserTasks ? "group" : "check"}`}
+          ></i>
+          {showUserTasks ? "All Tasks" : "My Tasks"}
         </button>
       </div>
       <div className="h-full">
-        {data?.lists && <BoardView data={data.lists} board_id={params.id} />}
+        {showUserTasks
+          ? userTaskLists.length > 0 && (
+              <BoardView data={userTaskLists} board_id={params.id} />
+            )
+          : data?.lists && <BoardView data={data.lists} board_id={params.id} />}
       </div>
     </>
   );

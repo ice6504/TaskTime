@@ -25,8 +25,6 @@ const CommentUser: React.FC<CommentUserProps> = ({ comments }) => {
           className="flex items-start mb-3 group w-fit" // ใช้ flex และ group
         >
           <div className="avatar pb-2">
-            {" "}
-            {/* เพิ่ม padding เพื่อให้มีระยะห่าง */}
             <div className="w-8 rounded-full">
               <img
                 src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
