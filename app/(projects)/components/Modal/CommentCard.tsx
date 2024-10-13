@@ -66,6 +66,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ onSave, card, user }) => {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "comments" },
         async (payload) => {
+
           const newComment = payload.new as Comment;
 
           // Check if the comment belongs to the current card
@@ -90,12 +91,13 @@ const CommentCard: React.FC<CommentCardProps> = ({ onSave, card, user }) => {
       )
       .subscribe();
 
+
     // Cleanup listener when the component is unmounted
     return () => {
       supabase.removeChannel(commentListener);
     };
   }, [card.card_id, supabase]);
-  
+
   const handleSaveClick = () => {
     if (description.trim()) {
       onSave(description); // Call the onSave function
@@ -107,6 +109,21 @@ const CommentCard: React.FC<CommentCardProps> = ({ onSave, card, user }) => {
   const handleCancelClick = () => {
     setIsInputFocused(false);
     setDescription(""); // Clear input on cancel
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    const { error } = await supabase
+      .from("comments")
+      .delete()
+      .eq("comment_id", commentId);
+  
+    if (error) {
+      console.error("Error deleting comment:", error);
+    } else {
+      setComments((prevComments) => 
+        prevComments.filter((comment) => comment.comment_id !== commentId)
+      );
+    }
   };
 
   return (
@@ -157,7 +174,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ onSave, card, user }) => {
           </div>
         </div>
       </div>
-      <CommentUser comments={comments} />
+      <CommentUser comments={comments}  onDelete={handleDeleteComment} />
     </>
   );
 };

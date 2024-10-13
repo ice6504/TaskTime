@@ -18,7 +18,8 @@ interface CommentUserProps {
   comments: Comment[];
 }
 
-const CommentUser: React.FC<CommentUserProps> = ({ comments }) => {
+const CommentUser: React.FC<{ comments: Comment[]; onDelete: (commentId: number) => void }> = ({ comments, onDelete }) => {
+  
   return (
     <div className="comment-list mt-4">
       {comments.map((comment) => (
@@ -41,7 +42,7 @@ const CommentUser: React.FC<CommentUserProps> = ({ comments }) => {
               <div className="relative">
                 <div className="bg-gray-200 text-black font-bold rounded-lg p-2 w-[480px]">
                   {comment.comment_text}
-                  <button className="absolute right-2 top-1.5 opacity-0 drop-shadow-sm shadow-md bg-red-500 text-white px-2 py-1 text-sm rounded-full hover:bg-red-700 transition-opacity group-hover:opacity-100">
+                  <button  onClick={() => onDelete(comment.comment_id)} className="absolute right-2 top-1.5 opacity-0 drop-shadow-sm shadow-md bg-red-500 text-white px-2 py-1 text-sm rounded-full hover:bg-red-700 transition-opacity group-hover:opacity-100">
                     <i className="fa-solid fa-trash-can"></i>
                   </button>
                 </div>

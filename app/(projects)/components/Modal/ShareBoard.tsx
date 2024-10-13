@@ -60,12 +60,12 @@ const ShareBoard: FC<ShareBoardProps> = ({
       "postgres_changes",
       { event: "*", schema: "public", table: "boardmember" },
       async (payload) => {
-        console.log("Change received:", payload);
+        
         
         // ตรวจสอบประเภทเหตุการณ์
         if (payload.eventType === "INSERT") {
           const newMemberData = payload.new as BoardMember;
-  
+          
           // เช็คว่าผู้ใช้ใหม่ตรงกับ board_id หรือไม่
           if (newMemberData && newMemberData.board_id === board_id) {
             const { data: userData, error: userError } = await supabase
@@ -89,7 +89,6 @@ const ShareBoard: FC<ShareBoardProps> = ({
             setMembers((prevMembers) =>
               prevMembers.filter((member) => member.id !== deletedMemberData.user_id)
             );
-            console.log("Member removed successfully!");
           }
         }
       }
