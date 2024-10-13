@@ -27,6 +27,65 @@ const ShareBoard: FC<ShareBoardProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [userSuggestions, setUserSuggestions] = useState<Member[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const { data, error } = await supabase
+        .from<BoardMember>("boardmember")
+        .select(
+          `
+          user_id,
+          users (
+            id,
+            username,
+            avatar_url
+          )
+        `
+        )
+        .eq("board_id", board_id);
+
+      if (error) {
+        console.error("Error fetching members:", error);
+      } else {
+        const users = data.map((member) => member.users); // ดึงข้อมูลผู้ใช้จากสมาชิก
+        setMembers(users);
+      }
+    };
+
+    const memberListener = supabase
+      .channel("public:boardmember")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "boardmember" },
+        async (payload) => {
+          console.log("Change received:", payload);
+          const newMemberData = payload.new as BoardMember;
+
+          // เช็คว่าผู้ใช้ใหม่ตรงกับ board_id หรือไม่
+          if (newMemberData && newMemberData.board_id === board_id) {
+            const { data: userData, error: userError } = await supabase
+              .from<User>("users")
+              .select("id, username, avatar_url")
+              .eq("id", newMemberData.user_id)
+              .single();
+
+            if (userError) {
+              console.error("Error fetching user data:", userError);
+            } else if (userData) {
+              setMembers((prevMembers) => [...prevMembers, userData]); // อัปเดต state ด้วยข้อมูลผู้ใช้ใหม่
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    fetchMembers(); // เรียกข้อมูลครั้งแรก
+
+    return () => {
+      supabase.removeChannel(memberListener); // Unsubscribe เมื่อ component ถูก unmount
+    };
+  }, [board_id]);
 
   // Search for users based on the email input
   const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,8 +271,15 @@ const ShareBoard: FC<ShareBoardProps> = ({
           <h3 className="text-2xl font-bold border-b-2 border-black mt-5">
             Members
           </h3>
-          {member.map((data, index) => {
-            return <Member creator={creator} data={data} key={index} />;
+          {members.map((data) => {
+            return (
+              <Member
+                board_id={board_id}
+                creator={creator}
+                data={data}
+                key={data.id}
+              />
+            );
           })}
         </div>
       </div>
