@@ -1,14 +1,17 @@
-import React from 'react'
-
-function UserInCard() {
-  return (
-    <div className="avatar gap-2 p-2 flex items-center text-center text-white cursor-pointer">
-    <div className="w-7 rounded-full">
-      <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-    </div>
-    <h3>userName</h3>
-  </div>
-  )
+interface User {
+  username: string;
+  avatar_url: string;
 }
 
-export default UserInCard
+function UserInCard({ data }: { data: User }) {
+  return (
+    <div className="avatar gap-2 p-2 flex items-center text-white cursor-pointer">
+      <div className="w-2/12 rounded-full">
+        <img src={data.avatar_url} alt={data.username} />
+      </div>
+      <h3 className="line-clamp-1 w-10/12">{data.username}</h3>
+    </div>
+  );
+}
+
+export default UserInCard;

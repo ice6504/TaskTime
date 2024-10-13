@@ -39,10 +39,10 @@ interface CardData {
 const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
   const supabase = createClient();
   const [cardData, setCardData] = useState<CardData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start loading as true
 
+  // Function to fetch card data
   const fetchCardData = async () => {
-    setLoading(true);
     const { data, error } = await supabase
       .from("cards")
       .select(
@@ -67,11 +67,35 @@ const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
     } else {
       setCardData(data);
     }
-    setLoading(false);
+    setLoading(false); // Set loading to false after fetching data
   };
 
   useEffect(() => {
     fetchCardData();
+
+    // Create a channel for real-time updates on the 'cards' table
+    const channel = supabase
+      .channel('public:cards')
+      .on('postgres_changes', {
+        event: '*', // Listen for all events
+        schema: 'public',
+        table: 'cards',
+      }, (payload) => {
+        if (payload.new.card_id === cardId) {
+          console.log("Card updated:", payload);
+          setCardData(payload.new); // Update card data with new data
+        } else if (payload.old.card_id === cardId) {
+          console.log("Card deleted");
+          setCardData(null); // Clear card data on delete
+          close(); // Close the modal if the card is deleted
+        }
+      })
+      .subscribe();
+
+    // Cleanup function to unsubscribe from the channel
+    return () => {
+      supabase.removeChannel(channel); // Use the correct method for unsubscription
+    };
   }, [cardId]);
 
   return (
@@ -89,7 +113,7 @@ const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
           <div className="px-4 text-black">
             <h2 className="text-2xl font-extrabold">{cardData?.card_name}</h2>
             <p className="text-gray-400 font-bold">
-              In list {cardData?.lists.list_name}
+              In list {cardData?.lists[0]?.list_name}
             </p>
 
             <div className="flex items-center gap-x-3 pb-5 pt-2 text-xl font-extrabold">

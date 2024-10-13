@@ -48,6 +48,8 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
   const [endDate, setEndDate] = useState<Date | null>(
     cardData.endDate ? new Date(cardData.endDate) : null
   );
+  const [email, setEmail] = useState("");
+  const [userSuggestions, setUserSuggestions] = useState<User[]>([]);
 
   useEffect(() => {
     setOriginalDescription(cardData.description);
@@ -141,6 +143,59 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
     setShowButtonTextarae(false);
   };
 
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputEmail = e.target.value;
+    setEmail(inputEmail);
+
+    if (inputEmail.length >= 3) {
+      try {
+        const { data: cardMembers, error: memberError } = await supabase
+          .from("cardmember")
+          .select("user_id")
+          .eq("card_id", cardData.card_id);
+
+        if (memberError) {
+          console.error("Error fetching board members:", memberError);
+          return;
+        }
+
+        const memberIds = cardMembers.map((member) => member.user_id);
+        const { data: users, error: userError } = await supabase
+          .from("users")
+          .select("id, username, avatar_url, email")
+          .ilike("email", `%${inputEmail}%`)
+          .not("id", "in", `(${memberIds.join(",")})`);
+
+        if (userError) {
+          console.error("Error fetching users:", userError);
+          return;
+        }
+
+        setUserSuggestions(users || []);
+      } catch (error) {
+        console.error("Error searching users:", error);
+      }
+    } else {
+      setUserSuggestions([]);
+    }
+  };
+
+  // New function to add a user as a member
+  const addUserToCard = async (userToAdd: User) => {
+    const { error } = await supabase.from("cardmember").insert({
+      user_id: userToAdd.id,
+      card_id: cardData.card_id,
+    });
+
+    if (error) {
+      console.error("Error adding user to card:", error);
+    } else {
+      // Optionally clear the email input and suggestions after adding
+      setEmail("");
+      setUserSuggestions([]);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-3 items-center">
@@ -186,7 +241,9 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
                 <input
                   type="text"
                   className="grow w-full max-w-xs h-10"
-                  placeholder="Search"
+                  placeholder="Search by email"
+                  value={email}
+                  onChange={handleEmailChange}
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -202,8 +259,36 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
                 </svg>
               </label>
 
-              <h2 className="pl-2 pt-5 font-bold">Card member</h2>
-              <UserInCard />
+              {email.length > 0 ? (
+                <>
+                  <h2 className="pl-2 pt-5 font-bold">Suggestions</h2>
+                  <div className="overflow-y-scroll h-20 mt-2">
+                    {userSuggestions.map((user, index) => (
+                      <div
+                        key={index}
+                        onClick={() => addUserToCard(user)}
+                        className="hover:bg-white/80 rounded-xl hover:text-black avatar gap-2 p-2 flex items-center text-white cursor-pointer transition-all"
+                      >
+                        <div className="w-2/12 rounded-full">
+                          <img src={user.avatar_url} alt={user.username} />
+                        </div>
+                        <h3 className="line-clamp-1 w-10/12">
+                          {user.username}
+                        </h3>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="pl-2 pt-5 font-bold">Card member</h2>
+                  <div className="overflow-y-scroll h-20">
+                    {cardData.users.map((user, index) => {
+                      return <UserInCard key={index} data={user} />;
+                    })}
+                  </div>
+                </>
+              )}
             </ul>
           </details>
 
