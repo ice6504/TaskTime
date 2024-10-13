@@ -8,7 +8,7 @@ interface Project {
   board_picture: string;
   creator: {
     username: string;
-  };
+  }[];
 }
 
 export const useProjects = () => {
