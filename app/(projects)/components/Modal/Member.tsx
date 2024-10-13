@@ -7,7 +7,7 @@ interface User {
   email: string;
 }
 
-function Member({ data, creator }: { data: User; creator: string }) {
+function Member({ data, creator,board_id }: { data: User; creator: string; board_id:string }) {
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-3">
