@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import CommentCard from "./CommentCard";
-
 import UserInCard from "./UserInCard";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
@@ -13,9 +11,44 @@ function EditCard() {
   const User = useUser();
   const [description, setDescription] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
-
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  // const [comments, setComments] = useState<{ id: number; comment_text: string }[]>([]);
+  const [cardId, setCardId] = useState<number | null>(null);
+
+  // const fetchComments = async () => {
+  //   const { data, error } = await supabase.from("comments").select("*")
+  //   if (error) {
+  //     console.error("Error fetching comments:", error);
+  //   } else {
+  //     setComments(data);
+  //   }
+  // };
+
+  const addComment = async (newComment: string) => {
+    if (!newComment.trim()) return;
+
+    if (!User) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("comments")
+      .insert([
+        {
+          comment_text: newComment,
+          user_id: User.id,
+          card_id: cardId, // ใช้ cardId ที่ถูกต้อง
+        },
+      ]);
+
+    if (error) console.error("Error adding comment: ", error);
+  };
+
+  useEffect(() => {
+    
+  }, [cardId]); // เพิ่ม cardId ใน dependencies เพื่อให้เรียก fetch ใหม่ทุกครั้งที่ cardId เปลี่ยน
 
   const handleStartDateChange = (date: Date | null) => {
     setStartDate(date);
@@ -23,20 +56,6 @@ function EditCard() {
 
   const handleEndDateChange = (date: Date | null) => {
     setEndDate(date);
-  };
-
-  const [modal, setModal] = useState(false);
-
-  const toggleModal = () => {
-    setModal(!modal);
-  };
-
-  const handleSaveClick = () => {
-    setIsInputFocused(false);
-  };
-
-  const handleCancelClick = () => {
-    setIsInputFocused(false);
   };
 
   return (
@@ -48,12 +67,10 @@ function EditCard() {
       </div>
       <div className="flex gap-2 justify-between">
         <textarea
-          className="py-3 px-4 ml-11 w-[480px] bg-white h-[160px] block border-2 resize-none border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
-          placeholder="This is a textarea placeholder "
-          onFocus={() => setIsInputFocused(true)}
-          onBlur={() => setIsInputFocused(false)}
-        >
-        </textarea>
+          className="py-3 px-4 ml-11 w-[480px] bg-white h-[160px] block border-2 resize-none border-gray-200 rounded-lg text-sm focus:border-primary duration-300 ease  disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 hover:border-primary"
+          placeholder="This is a textarea placeholder"
+          onChange={(e) => setDescription(e.target.value)} // เพิ่มการตั้งค่า description
+        ></textarea>
 
         <div className="flex flex-col gap-2">
           <details className="dropdown text-white">
@@ -87,30 +104,32 @@ function EditCard() {
             </ul>
           </details>
 
-          <details className="dropdown ">
+          <details className="dropdown">
             <summary className="btn btn-primary btn-sm w-52">
-              <i className="fa-regular fa-clock "></i>Start Date
+              <i className="fa-regular fa-clock"></i>Start Date
             </summary>
             <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-fit p-2 shadow z-10">
               <h2 className=" text-white text-center text-lg">Dates</h2>
 
-              <div className="">
-                <label className="text-white ">Start Date </label>
+              <div className="space-y-2">
+                <label className="text-white">Start Date</label>
                 <DatePicker
                   selected={startDate}
                   onChange={handleStartDateChange}
                   dateFormat="dd-MM-YYYY"
-                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholderText="dd-mm-yyyy"
+                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
-              <div className="">
-                <label className="text-white ">End Date </label>
+              <div className="space-y-2">
+                <label className="text-white">End Date</label>
                 <DatePicker
                   selected={endDate}
                   onChange={handleEndDateChange}
                   dateFormat="dd-MM-YYYY"
-                  className="text-black p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholderText="dd-mm-yyyy"
+                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div className="flex flex-col gap-2 pt-2">
@@ -127,8 +146,8 @@ function EditCard() {
       </div>
 
       <div className="ml-11">
-        <div className="flex gap-2 ">
-          <button className="btn btn-sm rounded-md bg-primary text-white font-bold">
+        <div className="flex gap-2">
+          <button className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold">
             Save
           </button>
           <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
@@ -142,7 +161,7 @@ function EditCard() {
       </div>
 
       <div className="items-center">
-        <CommentCard />
+        <CommentCard onSave={addComment} cardId={cardId} />
       </div>
     </div>
   );
