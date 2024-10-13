@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CommentCard from "./CommentCard";
 import UserInCard from "./UserInCard";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/hooks/useUser";
+
+interface Comment {
+  comment_id: number;
+  comment_text: string;
+  comment_date: string;
+  users: User;
+}
 
 interface User {
   id: string;
@@ -22,21 +29,26 @@ interface CardData {
   endDate: string;
   lists: {
     list_name: string;
-  };
+  }[];
   users: User[];
+  comments: Comment[];
 }
 
 function EditCard({ cardData }: { cardData: CardData }) {
   const supabase = createClient();
-  const User = useUser();
+  const user = useUser();
   const [description, setDescription] = useState(cardData.description || "");
-  const [startDate, setStartDate] = useState<Date | null>(cardData.startDate ? new Date(cardData.startDate) : null);
-  const [endDate, setEndDate] = useState<Date | null>(cardData.endDate ? new Date(cardData.endDate) : null);
+  const [startDate, setStartDate] = useState<Date | null>(
+    cardData.startDate ? new Date(cardData.startDate) : null
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    cardData.endDate ? new Date(cardData.endDate) : null
+  );
 
   const addComment = async (newComment: string) => {
     if (!newComment.trim()) return;
 
-    if (!User) {
+    if (!user) {
       console.error("User is not logged in");
       return;
     }
@@ -44,7 +56,7 @@ function EditCard({ cardData }: { cardData: CardData }) {
     const { error } = await supabase.from("comments").insert([
       {
         comment_text: newComment,
-        user_id: User.id,
+        user_id: user.id,
         card_id: cardData.card_id,
       },
     ]);
@@ -163,7 +175,9 @@ function EditCard({ cardData }: { cardData: CardData }) {
       </div>
 
       <div className="items-center">
-        <CommentCard onSave={addComment} cardId={cardData.card_id} />
+        {user && (
+          <CommentCard onSave={addComment} card={cardData} user={user} />
+        )}
       </div>
     </div>
   );

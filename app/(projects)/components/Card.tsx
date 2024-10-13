@@ -1,4 +1,5 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
+import Image from "next/image";
 
 interface User {
   id: string;
@@ -15,7 +16,13 @@ interface CardProps {
   member: User[];
 }
 
-function Card({ card_id, card_name, openModal, provided, member }: CardProps) {
+function Card({
+  card_id,
+  card_name,
+  openModal,
+  provided,
+  member = [],
+}: CardProps) {
   return (
     <div
       className="relative"
@@ -63,24 +70,28 @@ function Card({ card_id, card_name, openModal, provided, member }: CardProps) {
         {/* Title */}
         <h2 className="text-xl font-bold w-11/12 line-clamp-1">{card_name}</h2>
         {/* member */}
-        <div className="avatar-group -space-x-4 rtl:space-x-reverse">
-          {member.slice(0, 3).map((user, index) => {
-            return (
+        {Array.isArray(member) && member.length > 0 && (
+          <div className="avatar-group -space-x-4 rtl:space-x-reverse">
+            {member.slice(0, 3).map((user, index) => (
               <div key={index} className="avatar">
-                <div className="w-7">
-                  <img src={user.avatar_url} />
+                <Image
+                  className="rounded-full"
+                  width={28}
+                  height={28}
+                  src={user.avatar_url}
+                  alt={user.username}
+                />
+              </div>
+            ))}
+            {member.length - 3 > 0 && (
+              <div className="avatar placeholder">
+                <div className="bg-black/65 text-white font-bold w-8">
+                  <span>+{member.length - 3}</span>
                 </div>
               </div>
-            );
-          })}
-          {member.length - 3 > 0 && (
-            <div className="avatar placeholder">
-              <div className="bg-black/65 text-white font-bold w-7">
-                <span>+{member.length - 3}</span>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

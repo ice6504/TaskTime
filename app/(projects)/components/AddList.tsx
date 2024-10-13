@@ -32,9 +32,9 @@ const AddList: FC<Props> = ({ close, onListAdd, listLength, board_id }) => {
       if (error) {
         console.error("Error adding list:", error);
       } else if (data) {
-        onListAdd(data[0]); // Call the parent function to update the state
-        close(); // Close the form
-        setListName(""); // Clear the input field
+        onListAdd(data[0]);
+        close();
+        setListName("");
       }
     } catch (error) {
       console.error("Error adding list to Supabase:", error);

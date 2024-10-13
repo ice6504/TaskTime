@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface User {
   username: string;
   avatar_url: string;
@@ -24,15 +26,21 @@ const TimelineBar = ({ cardData }: { cardData: CardData }) => {
       {/* Member */}
       <div className="avatar-group -space-x-5 rtl:space-x-reverse">
         {cardData.users.slice(0, 3).map((user, index) => (
-          <div className="avatar" key={index}>
-            <div className="w-12">
+          <div className="avatar relative" key={index}>
+            <Image
+              src={user.avatar_url}
+              alt={user.username}
+              width={48}
+              height={48}
+            />
+            {/* <div className="w-12">
               <img src={user.avatar_url} alt={user.username} />
-            </div>
+            </div> */}
           </div>
         ))}
         {cardData.users.length - 3 > 0 && (
           <div className="avatar placeholder">
-            <div className="bg-black/65 text-xl text-white font-bold w-9">
+            <div className="bg-black/65 text-xl text-white font-bold w-12">
               <span>+{cardData.users.length - 3}</span>
             </div>
           </div>

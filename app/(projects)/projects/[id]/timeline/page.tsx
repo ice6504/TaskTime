@@ -137,7 +137,10 @@ const TimelinePage: FC<TimelinePage> = ({ params }) => {
                       {formatDate(new Date(endDate))}
                     </h2>
                     <span>
-                      ( {daysLeft > 0 ? `อีก ${daysLeft} วัน` : "ถึงกำหนดแล้ว"}{" "}
+                      ({" "}
+                      {daysLeft > 0
+                        ? `${daysLeft} days left`
+                        : "It's due today."}{" "}
                       )
                     </span>
                   </div>
