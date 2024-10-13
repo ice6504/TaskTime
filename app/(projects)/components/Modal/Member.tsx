@@ -7,7 +7,7 @@ interface User {
   email: string;
 }
 
-function Member({ data, creator,board_id }: { data: User; creator: string; board_id:string }) {
+function Member({ data, creator  }: { data: User; creator: string;  }) {
   return (
     <div className="flex justify-between items-center">
       <div className="flex gap-3">
@@ -30,6 +30,7 @@ function Member({ data, creator,board_id }: { data: User; creator: string; board
       <div className="border-2 border-primary rounded-2xl text-center text-lg w-24 py-2 font-bold">
         {data.id == creator ? "Admin" : "Member"}
       </div>
+    
     </div>
   );
 }
