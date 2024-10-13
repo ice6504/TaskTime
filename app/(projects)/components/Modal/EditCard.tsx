@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CommentCard from "./CommentCard";
@@ -34,9 +34,13 @@ interface CardData {
   comments: Comment[];
 }
 
-function EditCard({ cardData }: { cardData: CardData }) {
+export default function EditCard({ cardData }: { cardData: CardData }) {
   const supabase = createClient();
   const user = useUser();
+  const [showButtonTextarae, setShowButtonTextarae] = useState(false);
+  const [originalDescription, setOriginalDescription] = useState(
+    cardData.description
+  );
   const [description, setDescription] = useState(cardData.description || "");
   const [startDate, setStartDate] = useState<Date | null>(
     cardData.startDate ? new Date(cardData.startDate) : null
@@ -44,6 +48,34 @@ function EditCard({ cardData }: { cardData: CardData }) {
   const [endDate, setEndDate] = useState<Date | null>(
     cardData.endDate ? new Date(cardData.endDate) : null
   );
+
+  useEffect(() => {
+    setOriginalDescription(cardData.description);
+    setDescription(cardData.description);
+  }, [cardData]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("public:cards")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "cards",
+          filter: `card_id=eq.${cardData.card_id}`,
+        },
+        (payload) => {
+          console.log("Card updated:", payload.new);
+          setDescription(payload.new.description); // Automatically refresh description
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel); // Unsubscribe when the component unmounts
+    };
+  }, [cardData.card_id]);
 
   const addComment = async (newComment: string) => {
     if (!newComment.trim()) return;
@@ -72,6 +104,43 @@ function EditCard({ cardData }: { cardData: CardData }) {
     setEndDate(date);
   };
 
+  // Modified handleSave to prevent default form behavior
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent the form from submitting in the default way
+
+    // Check if the description has changed
+    if (description === originalDescription) {
+      console.log("No changes to save.");
+      setShowButtonTextarae(false); // Hide the buttons if no changes are made
+      return;
+    }
+
+    try {
+      console.log("Saving new description:", description);
+
+      // Call the Supabase client to update the description
+      const { data, error } = await supabase
+        .from("cards")
+        .update({ description: description })
+        .eq("card_id", cardData.card_id);
+
+      if (error) {
+        throw error; // Handle the error case
+      }
+
+      // If successful, update the original description and hide the button
+      setOriginalDescription(description);
+      setShowButtonTextarae(false);
+    } catch (error) {
+      console.error("Error updating card description:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    setDescription(originalDescription);
+    setShowButtonTextarae(false);
+  };
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-3 items-center">
@@ -79,12 +148,32 @@ function EditCard({ cardData }: { cardData: CardData }) {
         <h2 className="text-xl pl-3 font-bold">Description</h2>
       </div>
       <div className="flex gap-2 justify-between">
-        <textarea
-          className="py-3 px-4 ml-11 w-[480px] bg-white h-[160px] block border-2 resize-none border-gray-200 rounded-lg text-sm focus:border-primary duration-300 ease  disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-400 hover:border-primary"
-          placeholder="This is a textarea placeholder"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)} // Setting description value
-        ></textarea>
+        {/* Form with onSubmit handler */}
+        <form className="ml-11 space-y-3" onSubmit={handleSave}>
+          <textarea
+            className="py-3 px-4 w-[480px] bg-transparent text-black h-40 border-2 resize-none border-black/75 rounded-lg text-sm focus:border-primary duration-300 disabled:opacity-50 disabled:pointer-events-none"
+            value={description}
+            onFocus={() => setShowButtonTextarae(true)}
+            onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
+          {showButtonTextarae && (
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </form>
 
         <div className="flex flex-col gap-2">
           <details className="dropdown text-white">
@@ -120,7 +209,7 @@ function EditCard({ cardData }: { cardData: CardData }) {
 
           <details className="dropdown">
             <summary className="btn btn-primary btn-sm w-52">
-              <i className="fa-regular fa-clock"></i>Start Date
+              <i className="fa-regular fa-clock"></i> Dates
             </summary>
             <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-fit p-2 shadow z-10">
               <h2 className=" text-white text-center text-lg">Dates</h2>
@@ -159,17 +248,6 @@ function EditCard({ cardData }: { cardData: CardData }) {
         </div>
       </div>
 
-      <div className="ml-11">
-        <div className="flex gap-2">
-          <button className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold">
-            Save
-          </button>
-          <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
-            Cancel
-          </button>
-        </div>
-      </div>
-
       <div className="items-center">
         <h2 className="text-xl pl-11 font-bold">Comment</h2>
       </div>
@@ -182,5 +260,3 @@ function EditCard({ cardData }: { cardData: CardData }) {
     </div>
   );
 }
-
-export default EditCard;
