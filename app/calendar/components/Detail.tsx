@@ -6,18 +6,26 @@ interface Card {
   description: string;
   startDate: string;
   endDate: string;
+}
+
+interface SelectCard {
+  card_id: number;
+  card_name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
   lists: {
     list_name: String;
     boards: {
       title: String;
-    };
-  };
+    }[];
+  }[];
 }
 
 interface Props {
   detailClose: () => void;
   loading: boolean;
-  selectedEvent: Card;
+  selectedEvent: SelectCard;
 }
 
 const Detail: FC<Props> = ({ detailClose, loading, selectedEvent }) => {
@@ -25,8 +33,6 @@ const Detail: FC<Props> = ({ detailClose, loading, selectedEvent }) => {
     const [year, month, day] = originalDate.split("-");
     return `${day}/${month}/${year}`;
   };
-
-  console.log(selectedEvent);
 
   return (
     <>

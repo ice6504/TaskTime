@@ -7,22 +7,27 @@ import { useUser } from "@/hooks/useUser";
 import Calendar from "./components/Calendar";
 import Detail from "./components/Detail";
 
-type Card = {
+interface Card {
   card_id: number;
   card_name: string;
   description: string;
   startDate: string;
   endDate: string;
-};
+}
 
-type SelectCard = Card & {
+interface SelectCard {
+  card_id: number;
+  card_name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
   lists: {
     list_name: String;
     boards: {
       title: String;
     }[];
   }[];
-};
+}
 
 export default function CalendarPage() {
   const supabase = createClient();
@@ -108,6 +113,8 @@ export default function CalendarPage() {
 
       if (error) throw error;
       if (cardSelect) {
+        console.log(cardSelect);
+
         setSelectedEvent(cardSelect);
         setLoadDetail(false);
       }

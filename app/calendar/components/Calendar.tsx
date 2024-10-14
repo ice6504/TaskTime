@@ -17,11 +17,17 @@ interface Props {
 }
 
 const Calendar: FC<Props> = ({ events ,handleEventClick }) => {
+  const formatEndDate = (endDate: string) => {
+    const date = new Date(endDate);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split('T')[0];
+  };
+
   const formattedEvents = events.map((event) => ({
     id: event.card_id.toString(),
     title: event.card_name,
     start: event.startDate,
-    end: event.endDate,
+    end: formatEndDate(event.endDate),
     allDay: true,
   }));
   
