@@ -26,6 +26,8 @@ const Detail: FC<Props> = ({ detailClose, loading, selectedEvent }) => {
     return `${day}/${month}/${year}`;
   };
 
+  console.log(selectedEvent);
+
   return (
     <>
       <div className="absolute top-3 right-3">
@@ -70,17 +72,14 @@ const Detail: FC<Props> = ({ detailClose, loading, selectedEvent }) => {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3">
           <h3 className="text-xl font-bold">Status : </h3>
           {loading ? (
             <div className="bg-white/20 w-48 h-12 skeleton"></div>
           ) : (
-            <select className="select bg-white text-black w-full max-w-48 font-bold text-xl rounded-2xl">
-              <option>Todo</option>
-              <option>In Progress</option>
-              <option>Review</option>
-              <option>Done</option>
-            </select>
+            <div className="btn btn-sm bg-white text-black font-extrabold hover:bg-white ">
+              {selectedEvent.lists.list_name}
+            </div>
           )}
         </div>
         <h3 className="text-xl font-bold">Description :</h3>

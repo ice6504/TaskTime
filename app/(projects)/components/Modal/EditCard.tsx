@@ -127,7 +127,7 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
         .eq("card_id", cardData.card_id);
 
       if (error) {
-        throw error; // Handle the error case
+        throw error; 
       }
 
       // If successful, update the original description and hide the button

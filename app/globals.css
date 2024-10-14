@@ -21,141 +21,141 @@
 
 @layer components {
   .btn {
-    @apply text-white border-none;
+    color: white;
+    border: none;
   }
 
   .btn-ghost:hover {
-    @apply bg-transparent;
+    background-color: transparent;
   }
 
   .divider:before,
   .divider:after {
-    @apply bg-base-content/50;
+    background-color: var(--fallback-bc, oklch(var(--bc) / 0.5));
   }
 
   .skeleton {
     border-radius: 0;
   }
 
-  .tab {
-    @apply text-2xl font-bold;
-  }
-
   .tab:is(input:checked) {
-    @apply text-white border-b-4 border-primary;
+    color: white;
+    font-weight: 700;
+    border-color: oklch(var(--p));
+    border-bottom-width: 4px;
   }
 
   .tabs-bordered > .tab {
-    @apply border-transparent;
+    border-color: transparent;
   }
 
   .avatar-group :where(.avatar) {
-    @apply border-2;
+    border-width: 2px;
   }
 }
 
 /* Calendar */
 .fc {
   @apply h-full;
-}
 
-.fc-toolbar.fc-header-toolbar {
-  @apply mb-6;
-}
+  .fc-toolbar.fc-header-toolbar {
+    @apply mb-6;
+  }
 
-tbody[role="presentation"] {
-  @apply text-black font-semibold;
-}
+  tbody[role="presentation"] {
+    @apply text-black font-semibold;
+  }
 
-.fc-toolbar-title {
-  @apply text-white font-bold text-4xl w-20;
-}
+  .fc-toolbar-title {
+    @apply text-white font-bold text-4xl w-20;
+  }
 
-.fc-daygrid-day-top {
-  @apply flex justify-end;
-}
+  .fc-daygrid-day-top {
+    @apply flex justify-end;
+  }
 
-.fc-daygrid-day {
-  @apply bg-white/90;
-}
+  .fc-daygrid-day {
+    @apply bg-white/90;
 
-.fc-day-other {
-  @apply bg-[#cbcbcb] text-white;
-}
+    &.fc-day-other {
+      @apply bg-[#cbcbcb] text-white;
+    }
+  }
 
-.fc-day-today {
-  @apply bg-white/90;
-}
+  .fc-day-today {
+    &.fc-daygrid-day {
+      @apply bg-white/90;
+    }
+    .fc-daygrid-day-top {
+      @apply mx-1 mt-[0.05rem] w-8;
+      .fc-daygrid-day-number {
+        @apply text-white rounded-full bg-primary/80 w-8 text-center;
+      }
+    }
+  }
 
-.fc-daygrid-day-top {
-  @apply mx-1 mt-[0.05rem] w-8;
-}
+  .fc-col-header {
+    @apply mb-2;
+  }
 
-.fc-daygrid-day-number {
-  @apply text-white rounded-full bg-primary/80 w-8 text-center;
-}
+  .fc-col-header-cell {
+    @apply text-white text-xl uppercase;
+  }
 
-.fc-col-header {
-  @apply mb-2;
-}
+  &.fc-theme-standard .fc-scrollgrid {
+    @apply border-transparent;
+  }
 
-.fc-col-header-cell {
-  @apply text-white text-xl uppercase;
-}
+  &.fc-theme-standard th {
+    @apply border-transparent;
+  }
 
-.fc-theme-standard .fc-scrollgrid {
-  @apply border-transparent;
-}
+  &.fc-theme-standard td,
+  .fc-theme-standard th {
+    @apply border-black;
+  }
 
-.fc-theme-standard th {
-  @apply border-transparent;
-}
+  .fc-button {
+    @apply bg-primary border-none hover:bg-primary/50;
 
-.fc-theme-standard td,
-.fc-theme-standard th {
-  @apply border-black;
-}
+    &.fc-today-button {
+      @apply capitalize font-bold w-24;
+    }
+  }
 
-.fc-button {
-  @apply bg-primary border-none hover:bg-primary/50;
-}
+  .fc-button-primary {
+    @apply rounded-xl;
+  }
 
-.fc-today-button {
-  @apply capitalize font-bold w-24;
-}
+  .fc-button-primary:hover {
+    @apply active:bg-primary/10;
+  }
 
-.fc-button-primary {
-  @apply rounded-xl;
-}
+  .fc-button-primary:not(:disabled).fc-button-active {
+    @apply bg-primary;
+  }
 
-.fc-button-primary:hover {
-  @apply active:bg-primary/10;
-}
+  .fc-button-primary:disabled {
+    @apply bg-primary/80;
+  }
 
-.fc-button-primary:not(:disabled).fc-button-active {
-  @apply bg-primary;
-}
+  .fc-highlight {
+    @apply bg-primary/10;
+  }
 
-.fc-button-primary:disabled {
-  @apply bg-primary/80;
-}
+  &.fc-v-event {
+    @apply bg-primary/90;
+  }
 
-.fc-highlight {
-  @apply bg-primary/10;
-}
+  .fc-h-event {
+    @apply bg-primary border-none px-1 my-[2px];
+  }
 
-.fc-v-event {
-  @apply bg-primary/90;
-}
+  .fc-event {
+    @apply cursor-pointer;
+  }
 
-.fc-h-event {
-  @apply bg-primary border-none px-1 my-[2px];
-}
-
-.fc-event {
-  @apply cursor-pointer;
-}
-
-.fc-popover-title {
-  @apply text-primary-content;
+  .fc-popover-title {
+    @apply text-primary-content;
+  }
 }
