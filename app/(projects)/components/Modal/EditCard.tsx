@@ -34,7 +34,13 @@ interface CardData {
   comments: Comment[];
 }
 
-export default function EditCard({ cardData }: { cardData: CardData }) {
+export default function EditCard({
+  cardData,
+  board_id,
+}: {
+  cardData: CardData;
+  board_id: string;
+}) {
   const supabase = createClient();
   const user = useUser();
   const [showButtonTextarae, setShowButtonTextarae] = useState(false);
@@ -127,7 +133,7 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
         .eq("card_id", cardData.card_id);
 
       if (error) {
-        throw error; 
+        throw error;
       }
 
       // If successful, update the original description and hide the button
@@ -149,33 +155,46 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
 
     if (inputEmail.length >= 3) {
       try {
-        const { data: cardMembers, error: memberError } = await supabase
-          .from("cardmember")
+        // Fetch board members associated with the board_id
+        const { data: boardMembers, error: memberError } = await supabase
+          .from("boardmember")
           .select("user_id")
-          .eq("card_id", cardData.card_id);
+          .eq("board_id", board_id);
 
         if (memberError) {
           console.error("Error fetching board members:", memberError);
           return;
         }
 
-        const memberIds = cardMembers.map((member) => member.user_id);
+        const memberBoard = boardMembers
+          .map((user) => user.user_id)
+          .filter(Boolean);
+
+        const memberCard = cardData.users
+          .map((user) => user.id)
+          .filter(Boolean);
+
         const { data: users, error: userError } = await supabase
           .from("users")
           .select("id, username, avatar_url, email")
           .ilike("email", `%${inputEmail}%`)
-          .not("id", "in", `(${memberIds.join(",")})`);
+          .in("id", memberBoard)
+          .not("id", "in", `(${memberCard.join(",")})`);
+
+        console.log(users);
 
         if (userError) {
           console.error("Error fetching users:", userError);
           return;
         }
 
+        // Update suggestions with the found users or empty array if none
         setUserSuggestions(users || []);
       } catch (error) {
         console.error("Error searching users:", error);
       }
     } else {
+      // Clear suggestions if input is too short
       setUserSuggestions([]);
     }
   };
@@ -196,19 +215,46 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
     }
   };
 
+  const handleSaveDates = async () => {
+    if (!startDate || !endDate) {
+      console.log("Please select both dates.");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("cards")
+        .update({
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        })
+        .eq("card_id", cardData.card_id);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("Dates saved successfully!", data);
+    } catch (error) {
+      console.error("Error saving dates:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-3 items-center">
         <i className="fa-regular fa-file-lines fa-xl"></i>
         <h2 className="text-xl pl-3 font-bold">Description</h2>
       </div>
-      <div className="flex gap-2 justify-between">
-        {/* Form with onSubmit handler */}
+
+      <div className="flex gap-3">
+        {/* Description Form */}
         <form className="ml-11 space-y-3" onSubmit={handleSave}>
           <textarea
             className="py-3 px-4 w-[480px] bg-transparent text-black h-40 border-2 resize-none border-black/75 rounded-lg text-sm focus:border-primary duration-300 disabled:opacity-50 disabled:pointer-events-none"
-            value={description}
+            value={description || ""}
             onFocus={() => setShowButtonTextarae(true)}
+            onBlur={() => setShowButtonTextarae(false)}
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
           {showButtonTextarae && (
@@ -230,40 +276,31 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
           )}
         </form>
 
+        {/* User and Dates Sections */}
         <div className="flex flex-col gap-2">
           <details className="dropdown text-white">
             <summary className="btn btn-primary btn-sm w-52">
-              <i className="fa-solid fa-user-plus"></i>Add User
+              <i className="fa-solid fa-user-plus"></i> Add User
             </summary>
-            <ul className="menu mt-1 dropdown-content bg-base-100 rounded-xl w-fit p-2 shadow z-10">
-              <p className="text-center pb-2 text-lg">Member</p>
-              <label className="input input-bordered flex items-center gap-2 p-4">
+            {/* Add User Block */}
+            <ul className="menu mt-1 dropdown-content bg-base-100 rounded-xl w-full p-2 shadow z-10">
+              <label className="input input-bordered flex items-center w-full gap-2 p-4">
                 <input
                   type="text"
-                  className="grow w-full max-w-xs h-10"
+                  className="grow w-full h-10"
                   placeholder="Search by email"
                   value={email}
                   onChange={handleEmailChange}
                 />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
               </label>
-
-              {email.length > 0 ? (
-                <>
-                  <h2 className="pl-2 pt-5 font-bold">Suggestions</h2>
-                  <div className="overflow-y-scroll h-20 mt-2">
-                    {userSuggestions.map((user, index) => (
+              {/* User suggestions or current members */}
+              <h3 className="px-2 pt-3 font-bold">
+                {email.length > 0 ? "Suggestions" : "Card member"}
+              </h3>
+              <div className="overflow-y-scroll h-20 mt-2 w-full">
+                {email.length > 0 ? (
+                  userSuggestions.length > 0 ? (
+                    userSuggestions.map((user, index) => (
                       <div
                         key={index}
                         onClick={() => addUserToCard(user)}
@@ -276,19 +313,20 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
                           {user.username}
                         </h3>
                       </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h2 className="pl-2 pt-5 font-bold">Card member</h2>
-                  <div className="overflow-y-scroll h-20">
-                    {cardData.users.map((user, index) => {
-                      return <UserInCard key={index} data={user} />;
-                    })}
-                  </div>
-                </>
-              )}
+                    ))
+                  ) : (
+                    <div className="grid place-content-center h-full">
+                      <p className="font-bold text-xl text-center bg-slate-900 h-full">
+                        Not found user
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  cardData.users.map((user, index) => (
+                    <UserInCard key={index} data={user} />
+                  ))
+                )}
+              </div>
             </ul>
           </details>
 
@@ -296,9 +334,10 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
             <summary className="btn btn-primary btn-sm w-52">
               <i className="fa-regular fa-clock"></i> Dates
             </summary>
+            {/* Date Block */}
             <ul className="menu mt-1 dropdown-content bg-base-100 space-y-2 rounded-xl w-fit p-2 shadow z-10">
-              <h2 className=" text-white text-center text-lg">Dates</h2>
-
+              <h2 className="text-white text-center text-lg">Dates</h2>
+              {/* Start Date */}
               <div className="space-y-2">
                 <label className="text-white">Start Date</label>
                 <DatePicker
@@ -306,10 +345,10 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
                   onChange={handleStartDateChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="dd-mm-yyyy"
-                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
+              {/* End Date */}
               <div className="space-y-2">
                 <label className="text-white">End Date</label>
                 <DatePicker
@@ -317,15 +356,16 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
                   onChange={handleEndDateChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="dd-mm-yyyy"
-                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="text-black w-48 p-1 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {/* Save/Cancel */}
               <div className="flex flex-col gap-2 pt-2">
-                <button className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold">
+                <button
+                  onClick={handleSaveDates}
+                  className="btn btn-primary btn-sm rounded-md bg-primary text-white font-bold"
+                >
                   Save
-                </button>
-                <button className="btn btn-sm rounded-md bg-[#E1E1E1] text-[#333333] font-bold">
-                  Cancel
                 </button>
               </div>
             </ul>
@@ -333,11 +373,9 @@ export default function EditCard({ cardData }: { cardData: CardData }) {
         </div>
       </div>
 
+      {/* Comments Section */}
       <div className="items-center">
         <h2 className="text-xl pl-11 font-bold">Comment</h2>
-      </div>
-
-      <div className="items-center">
         {user && (
           <CommentCard onSave={addComment} card={cardData} user={user} />
         )}

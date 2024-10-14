@@ -249,7 +249,7 @@ function BoardView({ data, board_id }: { data: ListData[]; board_id: string }) {
         </Droppable>
       </DragDropContext>
       {editModal && currentCardId && (
-        <ModalCard close={toggleEditModal} cardId={currentCardId} />
+        <ModalCard close={toggleEditModal} cardId={currentCardId} board_id={board_id} />
       )}
     </>
   );

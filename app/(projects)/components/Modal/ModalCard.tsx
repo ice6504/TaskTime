@@ -6,6 +6,7 @@ import EditCard from "./EditCard";
 interface ModalCardProps {
   close: () => void;
   cardId: number;
+  board_id: string;
 }
 
 interface Comment {
@@ -36,7 +37,7 @@ interface CardData {
   comments: Comment[];
 }
 
-const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
+const ModalCard: FC<ModalCardProps> = ({ close, cardId, board_id }) => {
   const supabase = createClient();
   const [cardData, setCardData] = useState<CardData | null>(null);
   const [loading, setLoading] = useState(true); // Start loading as true
@@ -75,21 +76,25 @@ const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
 
     // Create a channel for real-time updates on the 'cards' table
     const channel = supabase
-      .channel('public:cards')
-      .on('postgres_changes', {
-        event: '*', // Listen for all events
-        schema: 'public',
-        table: 'cards',
-      }, (payload) => {
-        if (payload.new.card_id === cardId) {
-          console.log("Card updated:", payload);
-          setCardData(payload.new); // Update card data with new data
-        } else if (payload.old.card_id === cardId) {
-          console.log("Card deleted");
-          setCardData(null); // Clear card data on delete
-          close(); // Close the modal if the card is deleted
+      .channel("public:cards")
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen for all events
+          schema: "public",
+          table: "cards",
+        },
+        (payload) => {
+          if (payload.new.card_id === cardId) {
+            console.log("Card updated:", payload);
+            setCardData(payload.new); // Update card data with new data
+          } else if (payload.old.card_id === cardId) {
+            console.log("Card deleted");
+            setCardData(null); // Clear card data on delete
+            close(); // Close the modal if the card is deleted
+          }
         }
-      })
+      )
       .subscribe();
 
     // Cleanup function to unsubscribe from the channel
@@ -113,7 +118,7 @@ const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
           <div className="px-4 text-black">
             <h2 className="text-2xl font-extrabold">{cardData?.card_name}</h2>
             <p className="text-gray-400 font-bold">
-              In list {cardData?.lists[0]?.list_name}
+              In {cardData?.lists.list_name}
             </p>
 
             <div className="flex items-center gap-x-3 pb-5 pt-2 text-xl font-extrabold">
@@ -131,7 +136,7 @@ const ModalCard: FC<ModalCardProps> = ({ close, cardId }) => {
               ))}
             </div>
             <div className="flex gap-3">
-              {cardData && <EditCard cardData={cardData} />}
+              {cardData && <EditCard cardData={cardData} board_id={board_id} />}
             </div>
           </div>
         </div>
