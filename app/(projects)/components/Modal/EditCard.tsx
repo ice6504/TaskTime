@@ -254,7 +254,7 @@ export default function EditCard({
             className="py-3 px-4 w-[480px] bg-transparent text-black h-40 border-2 resize-none border-black/75 rounded-lg text-sm focus:border-primary duration-300 disabled:opacity-50 disabled:pointer-events-none"
             value={description || ""}
             onFocus={() => setShowButtonTextarae(true)}
-            onBlur={() => setShowButtonTextarae(false)}
+          
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
           {showButtonTextarae && (
@@ -316,7 +316,7 @@ export default function EditCard({
                     ))
                   ) : (
                     <div className="grid place-content-center h-full">
-                      <p className="font-bold text-xl text-center bg-slate-900 h-full">
+                      <p className="font-bold text-xl text-center h-full">
                         Not found user
                       </p>
                     </div>
